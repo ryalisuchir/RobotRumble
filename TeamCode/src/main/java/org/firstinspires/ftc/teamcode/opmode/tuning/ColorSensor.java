@@ -1,12 +1,12 @@
 package org.firstinspires.ftc.teamcode.opmode.tuning;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 
-@TeleOp
+@Autonomous
 public class ColorSensor extends LinearOpMode {
     private NormalizedColorSensor test_color;
 

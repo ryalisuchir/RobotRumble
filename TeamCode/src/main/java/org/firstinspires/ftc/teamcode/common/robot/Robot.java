@@ -132,7 +132,7 @@ public class Robot {
         );
     }
 
-    public float[] getColorOfSample() {
+    public int[] getColorOfSample() {
         return new float[] { colorSensor.getNormalizedColors().red, colorSensor.getNormalizedColors().green, colorSensor.getNormalizedColors().blue };
     }
 
