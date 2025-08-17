@@ -9,6 +9,7 @@ import com.seattlesolvers.solverslib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
 
 import org.firstinspires.ftc.teamcode.common.robot.Globals;
+import org.firstinspires.ftc.teamcode.common.robot.Robot;
 
 @Config
 public class DropdownSubsystem extends SubsystemBase {
@@ -29,8 +30,8 @@ public class DropdownSubsystem extends SubsystemBase {
                 dropdownRight.setPosition(DROPDOWN_TRANSFER);
                 break;
             case INTAKE:
-                dropdownLeft.setPosition(DROPDOWN_GROUND);
-                dropdownRight.setPosition(DROPDOWN_GROUND);
+                dropdownLeft.setPosition(0);
+                dropdownRight.setPosition(0);
                 break;
             case READY:
                 dropdownLeft.setPosition(DROPDOWN_EXTEND);

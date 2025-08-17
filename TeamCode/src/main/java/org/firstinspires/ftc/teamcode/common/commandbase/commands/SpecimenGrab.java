@@ -17,22 +17,21 @@ import org.firstinspires.ftc.teamcode.common.commandbase.commands.Utils.outtake.
 import org.firstinspires.ftc.teamcode.common.robot.Globals;
 import org.firstinspires.ftc.teamcode.common.robot.Robot;
 
-public class TransferCommand extends SequentialCommandGroup {
-    public TransferCommand(Robot robot) {
+public class SpecimenGrab extends SequentialCommandGroup {
+    public SpecimenGrab(Robot robot) {
         addCommands(
                 new SequentialCommandGroup(
+                        new ClawCommand(robot.clawSubsystem, Globals.OuttakeClawState.OPEN_TRANSFER),
+                        new WaitCommand(100),
                         new ParallelCommandGroup(
-                                new OuttakeTransferReadyCommand(robot),
-                                new GateCommand(robot.gateSubsystem, Globals.GateState.CLOSED),
-                                new SpinnerCommand(robot.spinnerSubsystem, Globals.SpinnerState.STOPPED),
-                                new DropdownCommand(robot, robot.dropdownSubsystem, Globals.DropdownState.TRANSFER),
-                                new ExtendoSlidesCommand(robot.extendoSubsystem, Globals.EXTENDO_MAX_RETRACTION)
-                        ),
-                        new ParallelCommandGroup(
-                                new GateCommand(robot.gateSubsystem, Globals.GateState.OPEN_TRANSFER),
-                                new OuttakeSlidesCommand(robot.outtakeSlidesSubsystem, Globals.LIFT_TRANSFER_POS)
-                        ),
-                        new ClawCommand(robot.clawSubsystem, Globals.OuttakeClawState.CLOSED)
+                                new OuttakeSlidesCommand(robot.outtakeSlidesSubsystem, Globals.LIFT_TRANSFER_POS),
+                                new SequentialCommandGroup(
+                                        new WaitCommand(100),
+                                        new OuttakeArmCommand(robot.outtakeArmSubsystem, Globals.OuttakeArmState.SPECIMEN_GRAB),
+                                        new WristCommand(robot.wristSubsystem, Globals.OuttakeWristState.SPECIMEN_GRAB)
+                                )
+                ),
+                        new OuttakeSlidesCommand(robot.outtakeSlidesSubsystem, Globals.LIFT_RETRACT_POS)
                 )
         );
     }

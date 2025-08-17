@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.common.robot;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.Pose2d;
 
 @Config
 public class Globals {
@@ -14,38 +15,42 @@ public class Globals {
     public static Globals.OuttakeWristState outtakeWristState = OuttakeWristState.TRANSFER;
     public static Globals.OuttakeArmState outtakeArmState = OuttakeArmState.SPECIMEN_GRAB;
 
+    public static Pose2d DEFAULT_START_POSE = new Pose2d(0, 0, Math.toRadians(0));
+    public static Pose2d BLUE_SIDEWAYS_START_POSE = new Pose2d(41, 64, Math.toRadians(180));
+
     // Lift Subsystem Constants
     public static double LIFT_HIGH_POS = 940;
     public static double LIFT_MID_POS = 260;
     public static double LIFT_PARK_POS = 0;
-    public static double LIFT_TRANSFER_POS = 60;
-    public static double LIFT_TRANSFER_READY_POS = 150;
+    public static double LIFT_TRANSFER_POS = 85;
+    public static double LIFT_TRANSFER_READY_POS = 85;
     public static double LIFT_READY_DEPOSIT_POS = 260; //after transfer, before bucket placement (maybe this is the same as mid?)
     public static double LIFT_SPECIMEN_GRAB_POS = 0;
     public static double LIFT_SPECIMEN_DEPOSIT_POS = 432;
     public static double LIFT_RETRACT_POS = 0;
-    public static double LIFT_MAX_TOLERANCE = 25;
+    public static double LIFT_MAX_TOLERANCE = 10;
 
     //Extendo Subsystem Constants
     public static double EXTENDO_MAX_EXTENSION = 517;
     public static double EXTENDO_MAX_RETRACTION = 0;
-    public static double EXTENDO_MAX_TOLERANCE = 25;
+    public static double EXTENDO_MAX_TOLERANCE = 15;
 
     public static double spinnerSpeed = 1;
 
+
     //Dropdown Subsystem Constants
     public static double DROPDOWN_TRANSFER = 0.65; //vertical
-    public static double DROPDOWN_GROUND = 0.52; //good intake
+    public static double DROPDOWN_GROUND = 0.45; //good intake. 0.53 when fully extended
     public static double DROPDOWN_EXTEND = 0.65; //good over the sub
 
     //Gate Subsystem Constants
-    public static double GATE_CLOSED = 0.25;
+    public static double GATE_CLOSED = 0.55;
     public static double GATE_OPEN_TRANSFER = 1;
-    public static double GATE_OPEN_EJECT = 0.56;
+    public static double GATE_OPEN_EJECT = 0.8;
 
     //Outtake Claw Constants
     public static double OUTTAKE_CLAW_OPEN = 0.6;
-    public static double OUTTAKE_CLAW_TRANSFER_OPEN = 0.65;
+    public static double OUTTAKE_CLAW_TRANSFER_OPEN = 0.7;
     public static double OUTTAKE_CLAW_CLOSE = 0.52;
 
     //Outtake Wrist Constants

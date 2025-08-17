@@ -4,26 +4,23 @@ import static org.firstinspires.ftc.teamcode.common.robot.Globals.MAX_DISTANCE_T
 import static org.firstinspires.ftc.teamcode.common.robot.Globals.MIN_DISTANCE_THRESHOLD;
 import static org.firstinspires.ftc.teamcode.opmode.Testing.ColorSensorHSV.detectSampleColor;
 
-import com.qualcomm.robotcore.hardware.NormalizedRGBA;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.seattlesolvers.solverslib.command.CommandBase;
 import com.seattlesolvers.solverslib.command.CommandScheduler;
+import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.command.ParallelCommandGroup;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import com.seattlesolvers.solverslib.command.WaitCommand;
-
 import android.graphics.Color;
 
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-
-import org.firstinspires.ftc.teamcode.common.commandbase.commands.Outtake.OuttakeDepositReadyCommand;
 import org.firstinspires.ftc.teamcode.common.commandbase.commands.TransferCommand;
 import org.firstinspires.ftc.teamcode.common.commandbase.commands.Utils.intake.DropdownCommand;
 import org.firstinspires.ftc.teamcode.common.commandbase.commands.Utils.intake.ExtendoSlidesCommand;
 import org.firstinspires.ftc.teamcode.common.commandbase.commands.Utils.intake.GateCommand;
 import org.firstinspires.ftc.teamcode.common.commandbase.commands.Utils.intake.SpinnerCommand;
-import org.firstinspires.ftc.teamcode.common.commandbase.commands.Utils.outtake.ClawCommand;
 import org.firstinspires.ftc.teamcode.common.commandbase.commands.Utils.outtake.OuttakeSlidesCommand;
-import org.firstinspires.ftc.teamcode.common.robot.ColorUtils;
 import org.firstinspires.ftc.teamcode.common.robot.Globals;
 import org.firstinspires.ftc.teamcode.common.robot.Robot;
 
@@ -41,6 +38,9 @@ public class ExtendAndSpinCommand extends CommandBase {
     private final Set<SampleColorDetected> targetColors;
     private final double extendoTargetPosition;
     private boolean colorDetected = false;
+    int lastEncoderPos = 0;
+    long lastEncoderUpdateTime = 0;
+    long STALL_THRESHOLD_MS = 700;
 
     public ExtendAndSpinCommand(
             Robot robot,
@@ -57,12 +57,22 @@ public class ExtendAndSpinCommand extends CommandBase {
     @Override
     public void initialize() {
         colorDetected = false;
+        lastEncoderPos = robot.intakeSpinner.getCurrentPosition();
+        lastEncoderUpdateTime = System.currentTimeMillis();
+
         CommandScheduler.getInstance().schedule(
                 new ParallelCommandGroup(
                         new ExtendoSlidesCommand(robot.extendoSubsystem, extendoTargetPosition),
-                        new DropdownCommand(robot.dropdownSubsystem, Globals.DropdownState.INTAKE),
+                        new DropdownCommand(robot, robot.dropdownSubsystem, Globals.DropdownState.INTAKE),
                         new SpinnerCommand(robot.spinnerSubsystem, Globals.SpinnerState.INTAKING),
-                        new GateCommand(robot.gateSubsystem, Globals.GateState.CLOSED)
+                        new GateCommand(robot.gateSubsystem, Globals.GateState.CLOSED),
+                        new SequentialCommandGroup(
+                                new OuttakeSlidesCommand(robot.outtakeSlidesSubsystem, 0),
+                                new InstantCommand(() -> {
+                                    robot.rightLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                                    robot.rightLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                                })
+                        )
 
                 )
         );
@@ -70,8 +80,22 @@ public class ExtendAndSpinCommand extends CommandBase {
 
     @Override
     public void execute() {
-        if (colorDetected) return;  // no need to re-check once detected
+        if (colorDetected) return;
         double distance = robot.colorSensor.getDistance(DistanceUnit.CM);
+
+        //Detect stall
+                if (robot.intakeSpinner.getCurrent(CurrentUnit.MILLIAMPS) > 6000 && robot.extendoMotor.getCurrentPosition() > Globals.EXTENDO_MAX_EXTENSION*0.5) {
+                    CommandScheduler.getInstance().schedule(
+                            new SequentialCommandGroup(
+                                    new SpinnerCommand(robot.spinnerSubsystem, Globals.SpinnerState.REVERSED),
+                                    new WaitCommand(100),
+                                    new SpinnerCommand(robot.spinnerSubsystem, Globals.SpinnerState.INTAKING)
+                            )
+                    );
+                    lastEncoderUpdateTime = System.currentTimeMillis();
+        }
+
+
         if (distance > MIN_DISTANCE_THRESHOLD && distance < MAX_DISTANCE_THRESHOLD) {
             float[] hsv = new float[3];
             int r = robot.colorSensor.red();
@@ -90,30 +114,9 @@ public class ExtendAndSpinCommand extends CommandBase {
             if (targetColors.contains(colorDetectedR)) {
                 colorDetected = true;
                 CommandScheduler.getInstance().schedule(
-                        new SequentialCommandGroup(
-                        new ParallelCommandGroup(
-                                new SpinnerCommand(robot.spinnerSubsystem, Globals.SpinnerState.STOPPED),
-                                new DropdownCommand(robot.dropdownSubsystem, Globals.DropdownState.TRANSFER),
-                                new ExtendoSlidesCommand(robot.extendoSubsystem, Globals.EXTENDO_MAX_RETRACTION)
-                        ),
-                                new ParallelCommandGroup(
-                                        new GateCommand(robot.gateSubsystem, Globals.GateState.OPEN_TRANSFER),
-                                        new OuttakeSlidesCommand(robot.outtakeSlidesSubsystem, Globals.LIFT_TRANSFER_POS)
-                                ),
-                                new ClawCommand(robot.clawSubsystem, Globals.OuttakeClawState.CLOSED),
-                                new WaitCommand(500),
-                                new OuttakeDepositReadyCommand(robot)
-                        )
+                    new TransferCommand(robot)
                 );
                 cancel();
-            } else {
-                CommandScheduler.getInstance().schedule(
-                        new SequentialCommandGroup(
-                                new GateCommand(robot.gateSubsystem, Globals.GateState.OPEN_EJECT),
-                                new WaitCommand(900),
-                                new GateCommand(robot.gateSubsystem, Globals.GateState.CLOSED)
-                        )
-                );
             }
         }
     }
@@ -126,5 +129,6 @@ public class ExtendAndSpinCommand extends CommandBase {
     @Override
     public void end(boolean interrupted) {
         robot.spinnerSubsystem.update(Globals.SpinnerState.STOPPED);
+        robot.gateSubsystem.update(Globals.GateState.CLOSED);
     }
 }

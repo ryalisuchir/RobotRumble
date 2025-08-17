@@ -11,8 +11,8 @@ import org.firstinspires.ftc.teamcode.common.robot.Globals;
 
 @Config
 public class OuttakeSlidesSubsystem extends SubsystemBase {
-    public static double p = 0.015;
-    public static double i = 0.005;
+    public static double p = 0.02;
+    public static double i = 0.05;
     public static double d = 0;
     public static double f = 0;
     private static final PIDFController slidePIDF = new PIDFController(p, i, d, f);
