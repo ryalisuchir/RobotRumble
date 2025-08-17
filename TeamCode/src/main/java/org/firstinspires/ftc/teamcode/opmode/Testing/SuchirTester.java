@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmode.Testing;
 
 import static org.firstinspires.ftc.teamcode.common.commandbase.commands.Intake.ExtendAndSpinCommand.SampleColorDetected.BLUE;
-import static org.firstinspires.ftc.teamcode.common.commandbase.commands.Intake.ExtendAndSpinCommand.SampleColorDetected.RED;
 import static org.firstinspires.ftc.teamcode.common.commandbase.commands.Intake.ExtendAndSpinCommand.SampleColorDetected.YELLOW;
 
 import android.graphics.Color;
@@ -12,27 +11,14 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.CommandScheduler;
-import com.seattlesolvers.solverslib.command.InstantCommand;
-import com.seattlesolvers.solverslib.command.ParallelCommandGroup;
-import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
-import com.seattlesolvers.solverslib.command.WaitCommand;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 
-import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.common.commandbase.commands.Intake.ExtendAndSpinCommand;
 import org.firstinspires.ftc.teamcode.common.commandbase.commands.Intake.IntakeToHighBucket;
 import org.firstinspires.ftc.teamcode.common.commandbase.commands.Outtake.OuttakeDepositHighCommand;
-import org.firstinspires.ftc.teamcode.common.commandbase.commands.Outtake.OuttakeDepositReadyCommand;
 import org.firstinspires.ftc.teamcode.common.commandbase.commands.Outtake.OuttakeTransferReadyCommand;
-import org.firstinspires.ftc.teamcode.common.commandbase.commands.TransferCommand;
-import org.firstinspires.ftc.teamcode.common.commandbase.commands.SpecimenGrab;
-import org.firstinspires.ftc.teamcode.common.commandbase.commands.SpecimenDeposit;
 
-import org.firstinspires.ftc.teamcode.common.commandbase.commands.Utils.intake.DropdownCommand;
-import org.firstinspires.ftc.teamcode.common.commandbase.commands.Utils.intake.ExtendoSlidesCommand;
-import org.firstinspires.ftc.teamcode.common.commandbase.commands.Utils.intake.GateCommand;
-import org.firstinspires.ftc.teamcode.common.commandbase.commands.Utils.intake.SpinnerCommand;
 import org.firstinspires.ftc.teamcode.common.commandbase.commands.Utils.outtake.ClawCommand;
 import org.firstinspires.ftc.teamcode.common.robot.Globals;
 import org.firstinspires.ftc.teamcode.common.robot.Robot;
@@ -41,7 +27,7 @@ import org.firstinspires.ftc.teamcode.common.robot.Robot;
 import java.util.Set;
 
 @TeleOp
-public class Sub2 extends CommandOpMode {
+public class SuchirTester extends CommandOpMode {
     GamepadEx ahnafButtonController;
     public Robot robot;
     public double root = 1;
