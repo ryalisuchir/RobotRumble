@@ -17,6 +17,7 @@ public class Globals {
 
     public static Pose2d DEFAULT_START_POSE = new Pose2d(0, 0, Math.toRadians(0));
     public static Pose2d BLUE_SIDEWAYS_START_POSE = new Pose2d(41, 64, Math.toRadians(180));
+    public static Pose2d BLUE_FAR_START_POSE = new Pose2d(-7, 66.43, Math.toRadians(-90));
 
     // Lift Subsystem Constants
     public static double LIFT_HIGH_POS = 940;
@@ -26,9 +27,9 @@ public class Globals {
     public static double LIFT_TRANSFER_READY_POS = 85;
     public static double LIFT_READY_DEPOSIT_POS = 260; //after transfer, before bucket placement (maybe this is the same as mid?)
     public static double LIFT_SPECIMEN_GRAB_POS = 0;
-    public static double LIFT_SPECIMEN_DEPOSIT_POS = 432;
+    public static double LIFT_SPECIMEN_DEPOSIT_POS = 520;
     public static double LIFT_RETRACT_POS = 0;
-    public static double LIFT_MAX_TOLERANCE = 10;
+    public static double LIFT_MAX_TOLERANCE = 25;
 
     //Extendo Subsystem Constants
     public static double EXTENDO_MAX_EXTENSION = 517;
@@ -54,15 +55,15 @@ public class Globals {
     public static double OUTTAKE_CLAW_CLOSE = 0.52;
 
     //Outtake Wrist Constants
-    public static double OUTTAKE_WRIST_SPECIMEN_GRAB = 0.95;
-    public static double OUTTAKE_WRIST_SPECIMEN_DEPOSIT = 0.3;
+    public static double OUTTAKE_WRIST_SPECIMEN_GRAB = 1;
+    public static double OUTTAKE_WRIST_SPECIMEN_DEPOSIT = 0.2;
     public static double OUTTAKE_WRIST_TRANSFER = 0;
     public static double OUTTAKE_WRIST_BUCKET = 0.82;
 
     //Outtake Arm Constants:
     public static double OUTTAKE_ARM_TRANSFER = 1;
-    public static double OUTTAKE_ARM_SPECIMEN_GRAB = 0.05;
-    public static double OUTTAKE_ARM_SPECIMEN_DEPOSIT = 0.72;
+    public static double OUTTAKE_ARM_SPECIMEN_GRAB = 0;
+    public static double OUTTAKE_ARM_SPECIMEN_DEPOSIT = 0.64;
     public static double OUTTAKE_ARM_BUCKET = 0.3;
 
     public static double MIN_DISTANCE_THRESHOLD = 1.35;

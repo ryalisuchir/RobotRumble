@@ -19,6 +19,8 @@ import org.firstinspires.ftc.teamcode.common.commandbase.commands.Intake.IntakeT
 import org.firstinspires.ftc.teamcode.common.commandbase.commands.Outtake.OuttakeDepositHighCommand;
 import org.firstinspires.ftc.teamcode.common.commandbase.commands.Outtake.OuttakeTransferReadyCommand;
 
+import org.firstinspires.ftc.teamcode.common.commandbase.commands.SpecimenDeposit;
+import org.firstinspires.ftc.teamcode.common.commandbase.commands.SpecimenGrab;
 import org.firstinspires.ftc.teamcode.common.commandbase.commands.Utils.outtake.ClawCommand;
 import org.firstinspires.ftc.teamcode.common.robot.Globals;
 import org.firstinspires.ftc.teamcode.common.robot.Robot;
@@ -106,15 +108,19 @@ public class SuchirTester extends CommandOpMode {
         }
 
         if (gamepad1.cross) {
-            schedule(new IntakeToHighBucket(robot, Set.of(YELLOW, BLUE), Globals.EXTENDO_MAX_EXTENSION*1));
+            schedule(new SpecimenGrab(robot));
         }
 
         if (gamepad1.circle) {
-                schedule(new IntakeToHighBucket(robot, Set.of(YELLOW, BLUE), Globals.EXTENDO_MAX_EXTENSION*0.75));
+                schedule(new SpecimenDeposit(robot));
         }
 
         if (gamepad1.square) {
-                schedule(new IntakeToHighBucket(robot, Set.of(YELLOW, BLUE), Globals.EXTENDO_MAX_EXTENSION*0.25));
+            if (Globals.outtakeClawState == Globals.OuttakeClawState.OPEN) {
+                schedule(new ClawCommand(robot.clawSubsystem, Globals.OuttakeClawState.CLOSED));
+            } else {
+                schedule(new ClawCommand(robot.clawSubsystem, Globals.OuttakeClawState.OPEN));
+            }
         }
 
         if (gamepad1.dpad_left) {

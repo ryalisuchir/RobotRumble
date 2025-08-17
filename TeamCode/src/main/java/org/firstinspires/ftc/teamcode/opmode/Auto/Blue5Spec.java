@@ -1,17 +1,20 @@
 package org.firstinspires.ftc.teamcode.opmode.Auto;
 
 import static org.firstinspires.ftc.teamcode.common.commandbase.commands.Intake.ExtendAndSpinCommand.SampleColorDetected.BLUE;
-import static org.firstinspires.ftc.teamcode.common.commandbase.commands.Intake.ExtendAndSpinCommand.SampleColorDetected.RED;
 import static org.firstinspires.ftc.teamcode.common.commandbase.commands.Intake.ExtendAndSpinCommand.SampleColorDetected.YELLOW;
 
 import android.graphics.Color;
 import android.util.Log;
 
+import com.acmerobotics.roadrunner.AccelConstraint;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.AngularVelConstraint;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.ProfileAccelConstraint;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+import com.acmerobotics.roadrunner.TranslationalVelConstraint;
+import com.acmerobotics.roadrunner.Vector2d;
+import com.acmerobotics.roadrunner.VelConstraint;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.seattlesolvers.solverslib.command.CommandScheduler;
@@ -23,10 +26,11 @@ import com.seattlesolvers.solverslib.command.WaitCommand;
 import org.firstinspires.ftc.teamcode.common.commandbase.commands.ActionCommand;
 import org.firstinspires.ftc.teamcode.common.commandbase.commands.BucketInitializeCommand;
 import org.firstinspires.ftc.teamcode.common.commandbase.commands.Intake.ExtendAndSpinCommand;
-import org.firstinspires.ftc.teamcode.common.commandbase.commands.Intake.IntakeToHighBucket;
 import org.firstinspires.ftc.teamcode.common.commandbase.commands.Outtake.OuttakeDepositHighCommand;
 import org.firstinspires.ftc.teamcode.common.commandbase.commands.Outtake.OuttakeTransferReadyCommand;
-import org.firstinspires.ftc.teamcode.common.commandbase.commands.Outtake.TransferToDepositHighCommand;
+import org.firstinspires.ftc.teamcode.common.commandbase.commands.SpecimenDeposit;
+import org.firstinspires.ftc.teamcode.common.commandbase.commands.SpecimenGrab;
+import org.firstinspires.ftc.teamcode.common.commandbase.commands.SpecimenInitializeCommand;
 import org.firstinspires.ftc.teamcode.common.commandbase.commands.TransferCommand;
 import org.firstinspires.ftc.teamcode.common.commandbase.commands.Utils.outtake.ClawCommand;
 import org.firstinspires.ftc.teamcode.common.robot.Globals;
@@ -36,64 +40,64 @@ import java.util.Collections;
 import java.util.Set;
 
 @Autonomous
-public class BlueSample extends OpMode {
+public class Blue5Spec extends OpMode {
     Robot robot;
-    TrajectoryActionBuilder movement1, movement2, movement3, movement4, movement5, movement6, movement7;
-    Action movement1a, movement2a, movement3a, movement4a, movement5a, movement6a, movement7a, movement8a, movement9a;
+    TrajectoryActionBuilder movement1, movement2, movement3, movement4, movement5, movement6, movement7, movement8;
+    Action movement1a, movement2a, movement3a, movement4a, movement5a, movement6a, movement7a, movement8a;
 
     @Override
     public void init() {
         CommandScheduler.getInstance().reset();
-        robot = new Robot(hardwareMap, Globals.BLUE_SIDEWAYS_START_POSE, true, true);
+        robot = new Robot(hardwareMap, Globals.BLUE_FAR_START_POSE, true, true);
 
         telemetry.addLine("Initialized.");
         telemetry.update();
 
-        movement1 = robot.driveSubsystem.trajectoryActionBuilderCorrection(Globals.BLUE_SIDEWAYS_START_POSE)
-                .splineToLinearHeading(
-                        new Pose2d(59, 57, Math.toRadians(225)), Math.toRadians(225),
-                        null,
-                        new ProfileAccelConstraint(-85, 85)
-                );
+        movement1 = robot.driveSubsystem.trajectoryActionBuilderCorrection(Globals.BLUE_FAR_START_POSE)
+                .splineToLinearHeading(new Pose2d(-7, 34, Math.toRadians(-90)), Math.toRadians(-90));
 
         movement2 = movement1.endTrajectory().fresh()
                 .setReversed(true)
-                .setTangent(Math.toRadians(45))
-                .splineToLinearHeading(
-                        new Pose2d(51, 60, Math.toRadians(270)), (Math.toRadians(0)),
-                        null,
-                        new ProfileAccelConstraint(-35, 35)
-                );
+                .splineToConstantHeading(new Vector2d(-35.43, 33.17), Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(-48, 10.53), Math.toRadians(100.00));
 
-        movement3 = movement2.endTrajectory().fresh()
-                .setReversed(false)
-                .splineToLinearHeading(
-                        new Pose2d(61, 57, Math.toRadians(225)), Math.toRadians(225));
+        movement3 = robot.driveSubsystem.trajectoryActionBuilder(new Pose2d(-45, 10.53, Math.toRadians(-90))) // stop here
+                .strafeToConstantHeading(new Vector2d(-48, 50))
+                .strafeToConstantHeading(new Vector2d(-48, 10.53))
+                .strafeToConstantHeading(new Vector2d(-64, 10.53))
+                .strafeToConstantHeading(new Vector2d(-64, 50))
+                .strafeToConstantHeading(new Vector2d(-64, 10.53))
+                .strafeToConstantHeading(new Vector2d(-69, 10.53));
 
-        movement4 = movement3.endTrajectory().fresh()
-                .setReversed(true)
-                .splineToLinearHeading(
-                        new Pose2d(
-                                48, 48, Math.toRadians(270)), Math.toRadians(90),
-                        null,
-                        new ProfileAccelConstraint(-35, 35)
-                );
+        movement4 = robot.driveSubsystem.trajectoryActionBuilderCorrection(new Pose2d(-65, 10.53, Math.toRadians(-90)))
+                .strafeToConstantHeading(new Vector2d(-69, 50))
+                .strafeToConstantHeading(new Vector2d(-60, 60),
+                        new TranslationalVelConstraint(25))
+        ;
 
-        movement5 = movement4.endTrajectory().fresh()
-                .setReversed(false)
-                .splineToLinearHeading(
-                        new Pose2d(64, 57, Math.toRadians(225)), Math.toRadians(225));
+        movement5 = robot.driveSubsystem.trajectoryActionBuilderCorrection(new Pose2d(-65, 54, Math.toRadians(-90)))
+                .splineToConstantHeading(new Vector2d(-5.48, 30.91), Math.toRadians(-90));
 
         movement6 = movement5.endTrajectory().fresh()
                 .setReversed(true)
+                .splineToLinearHeading(new Pose2d(-29, 55, Math.toRadians(90)), Math.toRadians(90))
                 .splineToLinearHeading(
-                        new Pose2d(53, 47, Math.toRadians(-53)), Math.toRadians(40),
-                        new AngularVelConstraint(Math.PI * 0.8)
+                        new Pose2d(-29, 64, Math.toRadians(90)), Math.toRadians(90),
+                        new TranslationalVelConstraint(10)
                 );
 
         movement7 = movement6.endTrajectory().fresh()
-                .setReversed(false)
-                .splineToLinearHeading(new Pose2d(61, 56.5, Math.toRadians(225)), Math.toRadians(225));
+                .setReversed(true)
+                .splineToLinearHeading(new Pose2d(-10, 38, Math.toRadians(-90)), Math.toRadians(-90))
+                .splineToLinearHeading(new Pose2d(-10, 32, Math.toRadians(-90)), Math.toRadians(-90));
+
+        movement8 = movement7.endTrajectory().fresh()
+                .setReversed(true)
+                .splineToLinearHeading(
+                        new Pose2d(-17, 58, Math.toRadians(0)), Math.toRadians(180),
+                        null,
+                        new ProfileAccelConstraint(-60, 85)
+                );
 
         movement1a = movement1.build();
         movement2a = movement2.build();
@@ -103,7 +107,7 @@ public class BlueSample extends OpMode {
         movement6a = movement6.build();
         movement7a = movement7.build();
 
-        CommandScheduler.getInstance().schedule(new BucketInitializeCommand(robot));
+        CommandScheduler.getInstance().schedule(new SpecimenInitializeCommand(robot));
 
     }
 
@@ -119,25 +123,21 @@ public class BlueSample extends OpMode {
                 new SequentialCommandGroup(
                         new ParallelCommandGroup(
                                 new ActionCommand(movement1a, Collections.emptySet()),
-                                new OuttakeDepositHighCommand(robot)
+                                new SpecimenDeposit(robot)
                         ),
-                        new WaitCommand(100),
                         new ClawCommand(robot.clawSubsystem, Globals.OuttakeClawState.OPEN),
                         new ParallelCommandGroup(
                                 new ActionCommand(movement2a, Collections.emptySet()),
-                                new OuttakeTransferReadyCommand(robot),
-                                new SequentialCommandGroup(
-                                 new WaitCommand(1000),
-                                        new UninterruptibleCommand(new ExtendAndSpinCommand(robot, Set.of(YELLOW, BLUE), Globals.EXTENDO_MAX_EXTENSION).whenFinished(() -> Log.i("IntakeToHighBucketAuto", "done")))
-                                )
+                                new SpecimenGrab(robot)
                         ),
+                        new ActionCommand(movement3a, Collections.emptySet()),
+                        new ActionCommand(movement4a, Collections.emptySet()),
                         new ParallelCommandGroup(
-                                new ActionCommand(movement3a, Collections.emptySet()),
-                                        new SequentialCommandGroup(
-                                                new TransferCommand(robot),
-                                                new WaitCommand(100),
-                                                new OuttakeDepositHighCommand(robot)
-                                        )
+                                new SpecimenDeposit(robot),
+                                new SequentialCommandGroup(
+                                        new WaitCommand(250),
+                                        new ActionCommand(movement5a, Collections.emptySet())
+                                )
                         )
                 )
         );

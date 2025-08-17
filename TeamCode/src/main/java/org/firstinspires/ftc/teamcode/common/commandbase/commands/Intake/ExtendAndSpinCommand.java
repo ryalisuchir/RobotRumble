@@ -71,6 +71,8 @@ public class ExtendAndSpinCommand extends CommandBase {
                                 new InstantCommand(() -> {
                                     robot.rightLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                                     robot.rightLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                                    robot.leftLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                                    robot.leftLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                                 })
                         )
 
@@ -116,7 +118,6 @@ public class ExtendAndSpinCommand extends CommandBase {
                 CommandScheduler.getInstance().schedule(
                     new TransferCommand(robot)
                 );
-                cancel();
             }
         }
     }

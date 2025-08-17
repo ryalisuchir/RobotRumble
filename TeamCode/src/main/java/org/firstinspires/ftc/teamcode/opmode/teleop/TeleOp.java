@@ -8,8 +8,10 @@ import android.graphics.Color;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.CommandScheduler;
+import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.command.ParallelCommandGroup;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import com.seattlesolvers.solverslib.command.WaitCommand;
@@ -97,6 +99,14 @@ public class TeleOp extends CommandOpMode {
         if (gamepad1.ps) {
             schedule(new ExtendAndSpinCommand(robot, Set.of(YELLOW, BLUE), Globals.EXTENDO_MAX_EXTENSION * 1));
         }
+
+        //AHNAF LOOK HERE FOR NEW COMMAND:
+//        new InstantCommand(() -> {
+//            robot.rightLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//            robot.rightLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//            robot.leftLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//            robot.leftLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        })
 
         robot.pinPointDrive.setDrivePowers(new PoseVelocity2d(
                 new Vector2d(
