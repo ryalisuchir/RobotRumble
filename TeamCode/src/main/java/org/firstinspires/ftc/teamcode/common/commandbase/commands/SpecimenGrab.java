@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.command.ParallelCommandGroup;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
+import com.seattlesolvers.solverslib.command.UninterruptibleCommand;
 import com.seattlesolvers.solverslib.command.WaitCommand;
 
 import org.firstinspires.ftc.teamcode.common.commandbase.commands.Outtake.OuttakeDepositReadyCommand;
@@ -34,6 +35,8 @@ public class SpecimenGrab extends SequentialCommandGroup {
                                         )
                                 )
                 ),
+                        new UninterruptibleCommand(
+                                new SequentialCommandGroup(
                         new OuttakeSlidesCommand(robot.outtakeSlidesSubsystem, Globals.LIFT_RETRACT_POS),
                         new WaitCommand(100),
                         new InstantCommand(() -> {
@@ -42,6 +45,8 @@ public class SpecimenGrab extends SequentialCommandGroup {
                             robot.leftLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                             robot.leftLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                         })
+                )
+                        )
                 )
         );
     }
