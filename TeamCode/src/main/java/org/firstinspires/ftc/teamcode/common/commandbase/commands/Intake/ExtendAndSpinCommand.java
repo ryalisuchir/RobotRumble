@@ -57,24 +57,12 @@ public class ExtendAndSpinCommand extends CommandBase {
     @Override
     public void initialize() {
         colorDetected = false;
-        lastEncoderPos = robot.intakeSpinner.getCurrentPosition();
-        lastEncoderUpdateTime = System.currentTimeMillis();
-
         CommandScheduler.getInstance().schedule(
                 new ParallelCommandGroup(
                         new ExtendoSlidesCommand(robot.extendoSubsystem, extendoTargetPosition),
                         new DropdownCommand(robot, robot.dropdownSubsystem, Globals.DropdownState.INTAKE),
                         new SpinnerCommand(robot.spinnerSubsystem, Globals.SpinnerState.INTAKING),
-                        new GateCommand(robot.gateSubsystem, Globals.GateState.CLOSED),
-                        new SequentialCommandGroup(
-                                new OuttakeSlidesCommand(robot.outtakeSlidesSubsystem, 0),
-                                new InstantCommand(() -> {
-                                    robot.rightLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                                    robot.rightLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                                    robot.leftLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                                    robot.leftLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                                })
-                        )
+                        new GateCommand(robot.gateSubsystem, Globals.GateState.CLOSED)
 
                 )
         );
@@ -85,7 +73,6 @@ public class ExtendAndSpinCommand extends CommandBase {
         if (colorDetected) return;
         double distance = robot.colorSensor.getDistance(DistanceUnit.CM);
 
-        //Detect stall
                 if (robot.intakeSpinner.getCurrent(CurrentUnit.MILLIAMPS) > 6000 && robot.extendoMotor.getCurrentPosition() > Globals.EXTENDO_MAX_EXTENSION*0.5) {
                     CommandScheduler.getInstance().schedule(
                             new SequentialCommandGroup(
@@ -103,8 +90,7 @@ public class ExtendAndSpinCommand extends CommandBase {
             int r = robot.colorSensor.red();
             int g = robot.colorSensor.green();
             int b = robot.colorSensor.blue();
-
-            // Normalize and convert to HSV
+            
             Color.RGBToHSV(r * 8, g * 8, b * 8, hsv); // Scale to 0–255
 
             float hue = hsv[0];

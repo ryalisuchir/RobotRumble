@@ -12,17 +12,11 @@ public class DropdownCommand extends CommandBase {
     Robot robot;
 
     public double getOptimalPosition(double currentPosition, double extendoMaxRetraction, double extendoFull) {
-        double minPos = 0.53;
-        double maxPos = 0.53;
-
-        // Clamp currentPosition so it stays within the valid range
-        if (currentPosition < extendoMaxRetraction) currentPosition = extendoMaxRetraction;
-        if (currentPosition > extendoFull) currentPosition = extendoFull;
-
-        double fraction = (double)(currentPosition - extendoMaxRetraction) /
-                (extendoFull - extendoMaxRetraction);
-
-        return minPos + fraction * (maxPos - minPos);
+        if (currentPosition > Globals.EXTENDO_MAX_EXTENSION-50) {
+            return 0.53;
+        } else {
+            return 0.45;
+        }
     }
 
     public DropdownCommand(Robot robot, DropdownSubsystem dropDownSubsystemInput, Globals.DropdownState dropDownStateInput) {

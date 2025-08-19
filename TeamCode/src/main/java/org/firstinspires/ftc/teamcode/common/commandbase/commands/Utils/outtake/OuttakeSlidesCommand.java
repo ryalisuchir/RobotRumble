@@ -12,7 +12,6 @@ public class OuttakeSlidesCommand extends CommandBase {
     public OuttakeSlidesCommand(OuttakeSlidesSubsystem depositSubsystemInput, double heightInput) {
         this.depositSubsystem = depositSubsystemInput;
         this.depositHeight = heightInput;
-        addRequirements(depositSubsystem);
     }
 
     @Override

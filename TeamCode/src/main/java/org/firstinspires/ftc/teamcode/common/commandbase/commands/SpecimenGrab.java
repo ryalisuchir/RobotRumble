@@ -35,6 +35,7 @@ public class SpecimenGrab extends SequentialCommandGroup {
                                 )
                 ),
                         new OuttakeSlidesCommand(robot.outtakeSlidesSubsystem, Globals.LIFT_RETRACT_POS),
+                        new WaitCommand(100),
                         new InstantCommand(() -> {
                             robot.rightLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                             robot.rightLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
