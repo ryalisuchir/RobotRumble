@@ -15,25 +15,11 @@ public class OuttakeTransferReadyCommand extends SequentialCommandGroup {
     public OuttakeTransferReadyCommand(Robot robot) {
         addCommands(
                 new SequentialCommandGroup(
-                        new ConditionalCommand(
-                                new SequentialCommandGroup( //true = just come down
-                                    new ParallelCommandGroup(
-                                            new OuttakeSlidesCommand(robot.outtakeSlidesSubsystem, Globals.LIFT_TRANSFER_READY_POS),
-                                            new OuttakeArmCommand(robot.outtakeArmSubsystem, Globals.OuttakeArmState.TRANSFER),
-                                            new WristCommand(robot.wristSubsystem, Globals.OuttakeWristState.TRANSFER),
-                                            new ClawCommand(robot.clawSubsystem, Globals.OuttakeClawState.OPEN_TRANSFER)
-                                    ),
-                                        new OuttakeSlidesCommand(robot.outtakeSlidesSubsystem, Globals.LIFT_TRANSFER_READY_POS)
-                                ),
-                                new SequentialCommandGroup( //false = regular transfer (SAME THING JUST FOR NOW)
-                                                new ParallelCommandGroup(
-                                                        new OuttakeSlidesCommand(robot.outtakeSlidesSubsystem, Globals.LIFT_TRANSFER_READY_POS),
-                                                        new OuttakeArmCommand(robot.outtakeArmSubsystem, Globals.OuttakeArmState.TRANSFER),
-                                                        new WristCommand(robot.wristSubsystem, Globals.OuttakeWristState.TRANSFER),
-                                                        new ClawCommand(robot.clawSubsystem, Globals.OuttakeClawState.OPEN_TRANSFER)
-                                                )
-                                ),
-                                () -> robot.rightLift.getCurrentPosition() >= Globals.LIFT_READY_DEPOSIT_POS
+                        new ParallelCommandGroup(
+                                new OuttakeSlidesCommand(robot.outtakeSlidesSubsystem, Globals.LIFT_TRANSFER_READY_POS),
+                                new OuttakeArmCommand(robot.outtakeArmSubsystem, Globals.OuttakeArmState.TRANSFER),
+                                new WristCommand(robot.wristSubsystem, Globals.OuttakeWristState.TRANSFER),
+                                new ClawCommand(robot.clawSubsystem, Globals.OuttakeClawState.OPEN_TRANSFER)
                         )
                 )
         );

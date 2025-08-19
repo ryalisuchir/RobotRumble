@@ -10,6 +10,7 @@ import com.seattlesolvers.solverslib.command.CommandScheduler;
 import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.command.ParallelCommandGroup;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
+import com.seattlesolvers.solverslib.command.UninterruptibleCommand;
 import com.seattlesolvers.solverslib.command.WaitCommand;
 import android.graphics.Color;
 
@@ -33,6 +34,7 @@ public class ExtendAndSpinCommand extends CommandBase {
         YELLOW,
         NONE
     }
+    private boolean resetDone = false;
 
     private final Robot robot;
     private final Set<SampleColorDetected> targetColors;
@@ -70,6 +72,24 @@ public class ExtendAndSpinCommand extends CommandBase {
 
     @Override
     public void execute() {
+        if (!resetDone) {
+            CommandScheduler.getInstance().schedule(
+                    new UninterruptibleCommand(
+                            new SequentialCommandGroup(
+                                    new OuttakeSlidesCommand(robot.outtakeSlidesSubsystem, Globals.LIFT_RETRACT_POS),
+                                    new WaitCommand(100),
+                                    new InstantCommand(() -> {
+                                        robot.rightLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                                        robot.rightLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                                        robot.leftLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                                        robot.leftLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                                    })
+                            )
+                    )
+            );
+            resetDone = true;
+        }
+
         if (colorDetected) return;
         double distance = robot.colorSensor.getDistance(DistanceUnit.CM);
 
@@ -117,5 +137,6 @@ public class ExtendAndSpinCommand extends CommandBase {
     public void end(boolean interrupted) {
         robot.spinnerSubsystem.update(Globals.SpinnerState.STOPPED);
         robot.gateSubsystem.update(Globals.GateState.CLOSED);
+        resetDone = false;
     }
 }

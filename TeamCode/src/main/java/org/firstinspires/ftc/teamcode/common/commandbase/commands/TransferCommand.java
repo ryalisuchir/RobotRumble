@@ -32,6 +32,7 @@ public class TransferCommand extends SequentialCommandGroup {
                                 new GateCommand(robot.gateSubsystem, Globals.GateState.OPEN_TRANSFER),
                                 new OuttakeSlidesCommand(robot.outtakeSlidesSubsystem, Globals.LIFT_TRANSFER_POS)
                         ),
+                        new WaitCommand(100),
                         new ClawCommand(robot.clawSubsystem, Globals.OuttakeClawState.CLOSED)
                 )
         );

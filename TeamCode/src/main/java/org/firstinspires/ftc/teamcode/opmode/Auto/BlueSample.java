@@ -131,18 +131,7 @@ public class BlueSample extends OpMode {
                                 new OuttakeTransferReadyCommand(robot),
                                 new SequentialCommandGroup(
                                  new WaitCommand(1000),
-                                        new ParallelCommandGroup(
-                                                new SequentialCommandGroup(
-                                                        new OuttakeSlidesCommand(robot.outtakeSlidesSubsystem, 0),
-                                                        new InstantCommand(() -> {
-                                                            robot.rightLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                                                            robot.rightLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                                                            robot.leftLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                                                            robot.leftLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                                                        })
-                                                ),
                                                 new UninterruptibleCommand(new ExtendAndSpinCommand(robot, Set.of(YELLOW, BLUE), Globals.EXTENDO_MAX_EXTENSION).whenFinished(() -> Log.i("IntakeToHighBucketAuto", "done")))
-                                        )
                                 )
                         ),
                         new ParallelCommandGroup(

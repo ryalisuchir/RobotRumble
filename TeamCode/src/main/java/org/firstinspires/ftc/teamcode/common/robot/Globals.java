@@ -25,7 +25,7 @@ public class Globals {
     public static double LIFT_PARK_POS = 0;
     public static double LIFT_TRANSFER_POS = 85;
     public static double LIFT_TRANSFER_READY_POS = 85;
-    public static double LIFT_READY_DEPOSIT_POS = 260; //after transfer, before bucket placement (maybe this is the same as mid?)
+    public static double LIFT_READY_DEPOSIT_POS = 100; //after transfer, before bucket placement (maybe this is the same as mid?)
     public static double LIFT_SPECIMEN_GRAB_POS = 0;
     public static double LIFT_SPECIMEN_DEPOSIT_POS = 520;
     public static double LIFT_RETRACT_POS = 0;
