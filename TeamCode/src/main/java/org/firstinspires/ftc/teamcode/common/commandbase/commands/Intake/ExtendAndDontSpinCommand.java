@@ -67,6 +67,8 @@ public class ExtendAndDontSpinCommand extends CommandBase {
             CommandScheduler.getInstance().schedule(
                     new UninterruptibleCommand(
                             new SequentialCommandGroup(
+                                    new OuttakeSlidesCommand(robot.outtakeSlidesSubsystem, Globals.LIFT_TRANSFER_READY_POS),
+                                    new WaitCommand(500),
                                     new OuttakeSlidesCommand(robot.outtakeSlidesSubsystem, Globals.LIFT_RETRACT_POS),
                                     new WaitCommand(100),
                                     new InstantCommand(() -> {
@@ -74,11 +76,11 @@ public class ExtendAndDontSpinCommand extends CommandBase {
                                         robot.rightLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                                         robot.leftLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                                         robot.leftLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                                    })
+                                    }),
+                                    new InstantCommand(() -> resetDone = true)
                             )
                     )
             );
-            resetDone = true;
         }
     }
 
