@@ -1,20 +1,11 @@
 package org.firstinspires.ftc.teamcode.opmode.Auto;
 
-import static org.firstinspires.ftc.teamcode.common.commandbase.commands.Intake.ExtendAndSpinCommand.SampleColorDetected.BLUE;
-import static org.firstinspires.ftc.teamcode.common.commandbase.commands.Intake.ExtendAndSpinCommand.SampleColorDetected.YELLOW;
-
-import android.graphics.Color;
-import android.util.Log;
-
-import com.acmerobotics.roadrunner.AccelConstraint;
 import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.AngularVelConstraint;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.ProfileAccelConstraint;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
-import com.acmerobotics.roadrunner.VelConstraint;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.seattlesolvers.solverslib.command.CommandScheduler;
@@ -31,10 +22,9 @@ import org.firstinspires.ftc.teamcode.common.robot.Globals;
 import org.firstinspires.ftc.teamcode.common.robot.Robot;
 
 import java.util.Collections;
-import java.util.Set;
 
 @Autonomous
-public class Skib extends OpMode {
+public class FourSpec extends OpMode {
     Robot robot;
     TrajectoryActionBuilder movement1, movement2, movement3, movement4, movement5, movement6, movement7, movement8, movement9, movement10;
     Action movement1a, movement2a, movement3a, movement4a, movement5a, movement6a, movement7a, movement8a, movement9a, movement10a;
