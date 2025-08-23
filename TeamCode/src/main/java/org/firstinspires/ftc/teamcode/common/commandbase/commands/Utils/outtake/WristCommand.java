@@ -13,7 +13,6 @@ public class WristCommand extends CommandBase {
     public WristCommand(WristSubsystem wristSubsystemInput, Globals.OuttakeWristState wristStateInput) {
         this.wristSubsystem = wristSubsystemInput;
         this.wristState = wristStateInput;
-        addRequirements(wristSubsystem);
     }
 
     @Override

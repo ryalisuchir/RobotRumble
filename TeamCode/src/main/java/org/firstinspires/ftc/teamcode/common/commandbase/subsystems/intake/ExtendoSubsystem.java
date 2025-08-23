@@ -12,9 +12,9 @@ import org.firstinspires.ftc.teamcode.common.robot.Globals;
 
 @Config
 public class ExtendoSubsystem extends SubsystemBase {
-    public static double p = 0.017;
-    public static double i = 0.05;
-    public static double d = 0.0013;
+    public static double p = 0.012;
+    public static double i = 0;
+    public static double d = 0.00;
     public static double f = 0;
     private static final PIDFController extendoPIDF = new PIDFController(p, i, d, f);
     public static double setPoint = 0;
@@ -52,17 +52,21 @@ public class ExtendoSubsystem extends SubsystemBase {
 
         motorPos = extendoMotor.getCurrentPosition();
 
-        extendoPIDF.setP(p);
-        extendoPIDF.setI(i);
-        extendoPIDF.setD(d);
-        extendoPIDF.setF(f);
+        if (Math.abs(motorPos-setPoint) < 5) { extendoMotor.setPower(0); } else {
 
-        extendoPIDF.setSetPoint(setPoint);
+            extendoPIDF.setP(p);
+            extendoPIDF.setI(i);
+            extendoPIDF.setD(d);
+            extendoPIDF.setF(f);
 
-        double maxPower = (f * motorPos) + maxPowerConstant;
-        double power = Range.clip(extendoPIDF.calculate(motorPos, setPoint), -maxPower, maxPower);
+            extendoPIDF.setSetPoint(setPoint);
 
-        extendoMotor.setPower(power);
+            double maxPower = (f * motorPos) + maxPowerConstant;
+            double power = Range.clip(extendoPIDF.calculate(motorPos, setPoint), -maxPower, maxPower);
+
+
+            extendoMotor.setPower(power);
+        }
 
     }
 

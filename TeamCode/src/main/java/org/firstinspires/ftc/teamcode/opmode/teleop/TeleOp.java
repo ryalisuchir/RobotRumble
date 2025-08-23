@@ -78,6 +78,8 @@ public class TeleOp extends CommandOpMode {
         robot.extendoSubsystem.extendoSlidesLoop();
         robot.outtakeSlidesSubsystem.outtakeSlidesLoop();
 
+        telemetry.addData("Outtake Motor:", robot.rightLift.getCurrentPosition());
+
         telemetry.addData("Distance:", robot.colorSensor.getDistance(DistanceUnit.CM));
         float[] hsv = new float[3];
         int r = robot.colorSensor.red();

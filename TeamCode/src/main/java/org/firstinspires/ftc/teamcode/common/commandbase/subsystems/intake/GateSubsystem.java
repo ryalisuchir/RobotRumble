@@ -27,6 +27,9 @@ public class GateSubsystem extends SubsystemBase {
             case CLOSED:
                 gateServo.setPosition(Globals.GATE_CLOSED);
                 break;
+            case MEGA_CLOSED:
+                gateServo.setPosition(Globals.GATE_MEGA_CLOSE);
+                break;
         }
     }
 }

@@ -27,8 +27,8 @@ import org.firstinspires.ftc.teamcode.common.robot.Robot;
 
 import java.util.Set;
 
-public class ExtendAndSpinCommand extends CommandBase {
-        public enum SampleColorDetected {
+public class ExtendAndDontSpinCommand extends CommandBase {
+    public enum SampleColorDetected {
         RED,
         BLUE,
         YELLOW,
@@ -37,28 +37,21 @@ public class ExtendAndSpinCommand extends CommandBase {
     private boolean resetDone = false;
 
     private final Robot robot;
-    private final Set<SampleColorDetected> targetColors;
     private final double extendoTargetPosition;
     public static boolean colorDetected = false;
     int lastEncoderPos = 0;
     long lastEncoderUpdateTime = 0;
     long STALL_THRESHOLD_MS = 700;
 
-    public ExtendAndSpinCommand(
+    public ExtendAndDontSpinCommand(
             Robot robot,
             Set<SampleColorDetected> targetColors,
             double extendoTargetPosition
     ) {
-        this.targetColors = targetColors;
         this.extendoTargetPosition = extendoTargetPosition;
         this.robot = robot;
 
 //        addRequirements(robot.extendoSubsystem, robot.spinnerSubsystem, robot.gateSubsystem); i um don't like solverslib anymore
-    }
-
-
-    public static boolean goofy() {
-        return colorDetected;
     }
 
     @Override
@@ -70,7 +63,6 @@ public class ExtendAndSpinCommand extends CommandBase {
                                 new ExtendoSlidesCommand(robot.extendoSubsystem, extendoTargetPosition),
                                 new DropdownCommand(robot, robot.dropdownSubsystem, Globals.DropdownState.INTAKE)
                         ),
-                        new SpinnerCommand(robot.spinnerSubsystem, Globals.SpinnerState.INTAKING),
                         new GateCommand(robot.gateSubsystem, Globals.GateState.CLOSED)
 
                 )
@@ -96,55 +88,16 @@ public class ExtendAndSpinCommand extends CommandBase {
             );
             resetDone = true;
         }
-
-        if (colorDetected) return;
-        double distance = robot.colorSensor.getDistance(DistanceUnit.CM);
-
-                if (robot.intakeSpinner.getCurrent(CurrentUnit.MILLIAMPS) > 6000 && robot.extendoMotor.getCurrentPosition() > Globals.EXTENDO_MAX_EXTENSION*0.5) {
-                    CommandScheduler.getInstance().schedule(
-                            new SequentialCommandGroup(
-                                    new SpinnerCommand(robot.spinnerSubsystem, Globals.SpinnerState.REVERSED),
-                                    new WaitCommand(100),
-                                    new SpinnerCommand(robot.spinnerSubsystem, Globals.SpinnerState.INTAKING)
-                            )
-                    );
-                    lastEncoderUpdateTime = System.currentTimeMillis();
-        }
-
-
-        if (distance > MIN_DISTANCE_THRESHOLD && distance < MAX_DISTANCE_THRESHOLD) {
-            float[] hsv = new float[3];
-            int r = robot.colorSensor.red();
-            int g = robot.colorSensor.green();
-            int b = robot.colorSensor.blue();
-            
-            Color.RGBToHSV(r * 8, g * 8, b * 8, hsv); // Scale to 0–255
-
-            float hue = hsv[0];
-            float sat = hsv[1];
-            float val = hsv[2];
-
-            ExtendAndSpinCommand.SampleColorDetected colorDetectedR = detectSampleColor(hue, sat, val);
-
-            if (targetColors.contains(colorDetectedR)) {
-                colorDetected = true;
-                CommandScheduler.getInstance().schedule(
-                    new TransferCommand(robot)
-                );
-            }
-        }
     }
 
 
     @Override
     public boolean isFinished() {
-        return colorDetected;
+        return resetDone;
     }
 
     @Override
     public void end(boolean interrupted) {
-        robot.spinnerSubsystem.update(Globals.SpinnerState.STOPPED);
-        robot.gateSubsystem.update(Globals.GateState.CLOSED);
         resetDone = false;
     }
 }

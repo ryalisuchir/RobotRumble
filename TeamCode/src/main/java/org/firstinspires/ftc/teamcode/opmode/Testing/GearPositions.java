@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.common.robot.Robot;
 public class GearPositions extends OpMode {
     Robot robot;
     public static double coaxIntake = Globals.DROPDOWN_TRANSFER;
-    public static double gate = Globals.GATE_OPEN_TRANSFER;
+    public static double gate = Globals.GATE_CLOSED;
     public static double arm = Globals.OUTTAKE_ARM_TRANSFER;
     public static double wrist = Globals.OUTTAKE_WRIST_TRANSFER;
     public static double claw = Globals.OUTTAKE_CLAW_TRANSFER_OPEN;
@@ -37,8 +37,8 @@ public class GearPositions extends OpMode {
         robot.intakeCoaxialRight.setPosition(coaxIntake);
         robot.gate.setPosition(gate);
         robot.intakeSpinner.setPower(spinPower);
-        robot.outtakeArm.setPosition(arm);
-        robot.outtakeWrist.setPosition(wrist);
+        robot.outtakeArm.setPosition(0);
+        robot.outtakeWrist.setPosition(1);
         robot.outtakeClaw.setPosition(claw);
 
         telemetry.addLine("Encoders:");

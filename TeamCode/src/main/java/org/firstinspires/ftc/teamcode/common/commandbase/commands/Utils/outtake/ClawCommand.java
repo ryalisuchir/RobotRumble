@@ -12,7 +12,6 @@ public class ClawCommand extends CommandBase {
     public ClawCommand(ClawSubsystem clawSubsystemInput, Globals.OuttakeClawState clawStateInput) {
         this.clawSubsystem = clawSubsystemInput;
         this.clawState = clawStateInput;
-        addRequirements(clawSubsystem);
     }
 
     @Override

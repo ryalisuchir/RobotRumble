@@ -25,7 +25,7 @@ public class SpinnerSubsystem extends SubsystemBase {
                 spinnerMotor.setPower(Globals.spinnerSpeed);
                 break;
             case REVERSED:
-                spinnerMotor.setPower(-Globals.spinnerSpeed);
+                spinnerMotor.setPower(-0.5);
                 break;
         }
     }

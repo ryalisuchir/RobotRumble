@@ -12,7 +12,6 @@ public class SpinnerCommand extends CommandBase {
     public SpinnerCommand(SpinnerSubsystem spinnerSubsystemInput, Globals.SpinnerState spinnerStateInput) {
         this.spinnerSubsystem = spinnerSubsystemInput;
         this.spinnerState = spinnerStateInput;
-        addRequirements(spinnerSubsystem);
     }
 
     @Override

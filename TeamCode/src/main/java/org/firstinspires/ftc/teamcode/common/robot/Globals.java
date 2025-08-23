@@ -27,7 +27,7 @@ public class Globals {
     public static double LIFT_TRANSFER_READY_POS = 85;
     public static double LIFT_READY_DEPOSIT_POS = 100; //after transfer, before bucket placement (maybe this is the same as mid?)
     public static double LIFT_SPECIMEN_GRAB_POS = 0;
-    public static double LIFT_SPECIMEN_DEPOSIT_POS = 520;
+    public static double LIFT_SPECIMEN_DEPOSIT_POS = 505;
     public static double LIFT_RETRACT_POS = 0;
     public static double LIFT_MAX_TOLERANCE = 25;
 
@@ -45,9 +45,10 @@ public class Globals {
     public static double DROPDOWN_EXTEND = 0.65; //good over the sub
 
     //Gate Subsystem Constants
-    public static double GATE_CLOSED = 0.55;
-    public static double GATE_OPEN_TRANSFER = 1;
-    public static double GATE_OPEN_EJECT = 0.8;
+    public static double GATE_CLOSED = 0.09;
+    public static double GATE_MEGA_CLOSE = 0;
+    public static double GATE_OPEN_TRANSFER = 0.7;
+    public static double GATE_OPEN_EJECT = 0.2;
 
     //Outtake Claw Constants
     public static double OUTTAKE_CLAW_OPEN = 0.6;
@@ -67,7 +68,7 @@ public class Globals {
     public static double OUTTAKE_ARM_BUCKET = 0.3;
 
     public static double MIN_DISTANCE_THRESHOLD = 1.35;
-    public static double MAX_DISTANCE_THRESHOLD = 1.6;
+    public static double MAX_DISTANCE_THRESHOLD = 2.5;
 
     public enum OpModeType {
         AUTO,
@@ -112,7 +113,8 @@ public class Globals {
     public enum GateState {
         CLOSED,
         OPEN_EJECT,
-        OPEN_TRANSFER
+        OPEN_TRANSFER,
+        MEGA_CLOSED
     }
 
     public enum SpinnerState {

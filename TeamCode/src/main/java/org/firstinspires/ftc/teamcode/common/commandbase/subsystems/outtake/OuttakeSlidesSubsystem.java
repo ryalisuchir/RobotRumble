@@ -12,8 +12,8 @@ import org.firstinspires.ftc.teamcode.common.robot.Globals;
 @Config
 public class OuttakeSlidesSubsystem extends SubsystemBase {
     public static double p = 0.015;
-    public static double i = 0.0015;
-    public static double d = 0;
+    public static double i = 0;
+    public static double d = 0.0;
     public static double f = 0;
     private static final PIDFController slidePIDF = new PIDFController(p, i, d, f);
     public static double setPoint = 0;
@@ -33,18 +33,21 @@ public class OuttakeSlidesSubsystem extends SubsystemBase {
 
         motorPosition = rightLift.getCurrentPosition();
 
-        slidePIDF.setP(p);
-        slidePIDF.setI(i);
-        slidePIDF.setD(d);
-        slidePIDF.setF(f);
+        if (Math.abs(motorPosition-setPoint) < 5) { rightLift.setPower(0); leftLift.setPower(0); } else {
 
-        slidePIDF.setSetPoint(setPoint);
+            slidePIDF.setP(p);
+            slidePIDF.setI(i);
+            slidePIDF.setD(d);
+            slidePIDF.setF(f);
 
-        double maxPower = (f * motorPosition) + maxPowerConstant;
-        double power = Range.clip(slidePIDF.calculate(motorPosition, setPoint), -0.6, maxPower);
+            slidePIDF.setSetPoint(setPoint);
 
-        leftLift.setPower(power);
-        rightLift.setPower(power);
+            double maxPower = (f * motorPosition) + maxPowerConstant;
+            double power = Range.clip(slidePIDF.calculate(motorPosition, setPoint), -0.6, maxPower);
+
+            leftLift.setPower(power);
+            rightLift.setPower(power);
+        }
     }
 
     public void outtakeSetPosition(double customSlidesPosition) {

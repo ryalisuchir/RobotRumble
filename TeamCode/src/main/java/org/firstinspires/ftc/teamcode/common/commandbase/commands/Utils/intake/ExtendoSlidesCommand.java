@@ -12,7 +12,6 @@ public class ExtendoSlidesCommand extends CommandBase {
     public ExtendoSlidesCommand(ExtendoSubsystem extendoSubsystemInput, double extendoInput) {
         this.extendoSubsystem = extendoSubsystemInput;
         this.extendoLength = extendoInput;
-        addRequirements(extendoSubsystem);
     }
 
     @Override

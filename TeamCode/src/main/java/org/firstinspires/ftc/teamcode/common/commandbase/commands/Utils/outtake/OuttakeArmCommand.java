@@ -13,7 +13,6 @@ public class OuttakeArmCommand extends CommandBase {
     public OuttakeArmCommand(OuttakeArmSubsystem outtakeArmSubsystemInput, Globals.OuttakeArmState outtakeArmStateInput) {
         this.outtakeArmSubsystem = outtakeArmSubsystemInput;
         this.outtakeArmState = outtakeArmStateInput;
-        addRequirements(outtakeArmSubsystem);
     }
 
     @Override

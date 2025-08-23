@@ -12,7 +12,6 @@ public class GateCommand extends CommandBase {
     public GateCommand(GateSubsystem gateSubsystemInput, Globals.GateState gateStateInput) {
         this.gateSubsystem = gateSubsystemInput;
         this.gateState = gateStateInput;
-        addRequirements(gateSubsystem);
     }
 
     @Override
