@@ -12,6 +12,7 @@ import com.acmerobotics.roadrunner.AngularVelConstraint;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.ProfileAccelConstraint;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -24,6 +25,8 @@ import com.seattlesolvers.solverslib.command.WaitCommand;
 
 import org.firstinspires.ftc.teamcode.common.commandbase.commands.ActionCommand;
 import org.firstinspires.ftc.teamcode.common.commandbase.commands.BucketInitializeCommand;
+import org.firstinspires.ftc.teamcode.common.commandbase.commands.Intake.AutoSkib.ExtendAndSpinAndStopCommand;
+import org.firstinspires.ftc.teamcode.common.commandbase.commands.Intake.AutoSkib.JustIntakeEverythingCommand;
 import org.firstinspires.ftc.teamcode.common.commandbase.commands.Intake.ExtendAndSpinCommand;
 import org.firstinspires.ftc.teamcode.common.commandbase.commands.Intake.IntakeToHighBucket;
 import org.firstinspires.ftc.teamcode.common.commandbase.commands.Outtake.OuttakeDepositHighCommand;
@@ -53,46 +56,40 @@ public class BlueSample extends OpMode {
         telemetry.update();
 
         movement1 = robot.driveSubsystem.trajectoryActionBuilderCorrection(Globals.BLUE_SIDEWAYS_START_POSE)
+                .setReversed(true)
                 .splineToLinearHeading(
-                        new Pose2d(59, 57, Math.toRadians(225)), Math.toRadians(225),
+                        new Pose2d(57, 50, Math.toRadians(250)), Math.toRadians(0),
                         null,
-                        new ProfileAccelConstraint(-85, 85)
-                );
+                        new ProfileAccelConstraint(-30, 85)
+                ); //dep 1, grab second
 
         movement2 = movement1.endTrajectory().fresh()
-                .setReversed(true)
-                .setTangent(Math.toRadians(45))
                 .splineToLinearHeading(
-                        new Pose2d(51, 60, Math.toRadians(270)), (Math.toRadians(0)),
-                        null,
-                        new ProfileAccelConstraint(-35, 35)
-                );
+                        new Pose2d(57, 50, Math.toRadians(270)), Math.toRadians(270)
+                ); //transfer from samp2, outtake slides go up, extendo goes out to grab other one. when outtake slides are done, they will come down, reset, extendo will go even more out
 
         movement3 = movement2.endTrajectory().fresh()
-                .setReversed(false)
                 .splineToLinearHeading(
-                        new Pose2d(61, 57, Math.toRadians(225)), Math.toRadians(225));
+                        new Pose2d(57, 50, Math.toRadians(250)), Math.toRadians(0),
+                        null,
+                        new ProfileAccelConstraint(-30, 85)
+                ); //deposit 2, extendo comes out a little
 
         movement4 = movement3.endTrajectory().fresh()
-                .setReversed(true)
                 .splineToLinearHeading(
-                        new Pose2d(
-                                48, 48, Math.toRadians(270)), Math.toRadians(90),
-                        null,
-                        new ProfileAccelConstraint(-35, 35)
-                );
+                        new Pose2d(53, 45, Math.toRadians(315)), Math.toRadians(315)
+                ); //turn, extend how much ever, spin
 
         movement5 = movement4.endTrajectory().fresh()
-                .setReversed(false)
                 .splineToLinearHeading(
-                        new Pose2d(64, 57, Math.toRadians(225)), Math.toRadians(225));
+                        new Pose2d(57, 50, Math.toRadians(250)), Math.toRadians(0),
+                        null,
+                        new ProfileAccelConstraint(-30, 85)
+                ); //transfer while doing this mvoement, go up. extendo should come out here like 0.4*max extension
 
         movement6 = movement5.endTrajectory().fresh()
-                .setReversed(true)
-                .splineToLinearHeading(
-                        new Pose2d(53, 47, Math.toRadians(-53)), Math.toRadians(40),
-                        new AngularVelConstraint(Math.PI * 0.8)
-                );
+                .setReversed(false)
+                .splineTo(new Vector2d(26.21, 10.53), Math.toRadians(225.00)); //extendo will be out at this point. slides should come down, reset.
 
         movement7 = movement6.endTrajectory().fresh()
                 .setReversed(false)
@@ -122,23 +119,35 @@ public class BlueSample extends OpMode {
                 new SequentialCommandGroup(
                         new ParallelCommandGroup(
                                 new ActionCommand(movement1a, Collections.emptySet()),
-                                new OuttakeDepositHighCommand(robot)
+                                new SequentialCommandGroup(
+                                        new WaitCommand(100),
+                                        new OuttakeDepositHighCommand(robot)
+                                )
                         ),
                         new WaitCommand(100),
                         new ClawCommand(robot.clawSubsystem, Globals.OuttakeClawState.OPEN),
                         new ParallelCommandGroup(
-                                new ActionCommand(movement2a, Collections.emptySet()),
-                                new OuttakeTransferReadyCommand(robot),
                                 new SequentialCommandGroup(
-                                 new WaitCommand(1000),
-                                                new UninterruptibleCommand(new ExtendAndSpinCommand(robot, Set.of(YELLOW, BLUE), Globals.EXTENDO_MAX_EXTENSION).whenFinished(() -> Log.i("IntakeToHighBucketAuto", "done")))
-                                )
+                                        new OuttakeTransferReadyCommand(robot),
+                                        new UninterruptibleCommand(
+                                                new SequentialCommandGroup(
+                                                        new OuttakeSlidesCommand(robot.outtakeSlidesSubsystem, Globals.LIFT_RETRACT_POS),
+                                                        new WaitCommand(100),
+                                                        new InstantCommand(() -> {
+                                                            robot.rightLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                                                            robot.rightLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                                                            robot.leftLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                                                            robot.leftLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                                                        })
+                                                )
+                                        )
+                                ),
+                                new JustIntakeEverythingCommand(robot, Globals.EXTENDO_MAX_EXTENSION*1.5).whenFinished(() -> Log.i("IntakeToHighBucketAuto", "done"))
                         ),
                         new ParallelCommandGroup(
-                                new ActionCommand(movement3a, Collections.emptySet()),
+                                new ActionCommand(movement2a, Collections.emptySet()),
                                         new SequentialCommandGroup(
                                                 new TransferCommand(robot),
-                                                new WaitCommand(100),
                                                 new OuttakeDepositHighCommand(robot)
                                         )
                         )

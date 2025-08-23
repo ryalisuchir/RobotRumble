@@ -1,9 +1,12 @@
 package org.firstinspires.ftc.teamcode.common.commandbase.subsystems;
 
+import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.TimeTrajectory;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 
+import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 import org.firstinspires.ftc.teamcode.roadrunner.PinpointDrive;
 
 public class DriveSubsystem extends SubsystemBase { //done 07.20.2025
@@ -33,6 +36,10 @@ public class DriveSubsystem extends SubsystemBase { //done 07.20.2025
 
     public TrajectoryActionBuilder trajectoryActionBuilderCorrection(Pose2d startPose) {
         return drive.actionBuilderAddedCorrection(startPose);
+    }
+
+    public MecanumDrive.CancelableAction cancel(Action t) {
+        return drive.new CancelableAction(t);
     }
 
 }

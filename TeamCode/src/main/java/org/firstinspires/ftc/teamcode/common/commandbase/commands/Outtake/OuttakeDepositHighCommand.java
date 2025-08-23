@@ -15,8 +15,13 @@ public class OuttakeDepositHighCommand extends SequentialCommandGroup {
         addCommands(
                 new ParallelCommandGroup(
                         new OuttakeSlidesCommand(robot.outtakeSlidesSubsystem, Globals.LIFT_HIGH_POS),
-                                new OuttakeArmCommand(robot.outtakeArmSubsystem, Globals.OuttakeArmState.BUCKET_IDEAL),
-                                new WristCommand(robot.wristSubsystem, Globals.OuttakeWristState.BUCKET_IDEAL)
+                                new SequentialCommandGroup(
+                                     new WaitCommand(500),
+                                     new ParallelCommandGroup(
+                                             new OuttakeArmCommand(robot.outtakeArmSubsystem, Globals.OuttakeArmState.BUCKET_IDEAL),
+                                             new WristCommand(robot.wristSubsystem, Globals.OuttakeWristState.BUCKET_IDEAL)
+                                     )
+                                )
 
                 )
         );

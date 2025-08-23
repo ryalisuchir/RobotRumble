@@ -1,42 +1,21 @@
 package org.firstinspires.ftc.teamcode.opmode.Auto;
-
 import static org.firstinspires.ftc.teamcode.common.commandbase.commands.Intake.ExtendAndSpinCommand.SampleColorDetected.BLUE;
-import static org.firstinspires.ftc.teamcode.common.commandbase.commands.Intake.ExtendAndSpinCommand.SampleColorDetected.RED;
 import static org.firstinspires.ftc.teamcode.common.commandbase.commands.Intake.ExtendAndSpinCommand.SampleColorDetected.YELLOW;
-
 import android.graphics.Color;
 import android.util.Log;
-
 import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.AngularVelConstraint;
-import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.ProfileAccelConstraint;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
-import com.acmerobotics.roadrunner.TranslationalVelConstraint;
-import com.acmerobotics.roadrunner.VelConstraint;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.seattlesolvers.solverslib.command.CommandScheduler;
-import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.command.ParallelCommandGroup;
 import com.seattlesolvers.solverslib.command.RepeatCommand;
-import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
-import com.seattlesolvers.solverslib.command.UninterruptibleCommand;
-import com.seattlesolvers.solverslib.command.WaitCommand;
-
 import org.firstinspires.ftc.teamcode.common.commandbase.commands.ActionCommand;
 import org.firstinspires.ftc.teamcode.common.commandbase.commands.BucketInitializeCommand;
 import org.firstinspires.ftc.teamcode.common.commandbase.commands.Intake.ExtendAndSpinCommand;
-import org.firstinspires.ftc.teamcode.common.commandbase.commands.Intake.IntakeToHighBucket;
-import org.firstinspires.ftc.teamcode.common.commandbase.commands.Outtake.OuttakeDepositHighCommand;
-import org.firstinspires.ftc.teamcode.common.commandbase.commands.Outtake.OuttakeTransferReadyCommand;
-import org.firstinspires.ftc.teamcode.common.commandbase.commands.Outtake.TransferToDepositHighCommand;
-import org.firstinspires.ftc.teamcode.common.commandbase.commands.TransferCommand;
-import org.firstinspires.ftc.teamcode.common.commandbase.commands.Utils.outtake.ClawCommand;
-import org.firstinspires.ftc.teamcode.common.commandbase.commands.Utils.outtake.OuttakeSlidesCommand;
 import org.firstinspires.ftc.teamcode.common.robot.Globals;
 import org.firstinspires.ftc.teamcode.common.robot.Robot;
+import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 
 import java.util.Collections;
 import java.util.Set;
@@ -44,8 +23,8 @@ import java.util.Set;
 @Autonomous
 public class Sampsamp extends OpMode {
     Robot robot;
-    TrajectoryActionBuilder movement1, movement2, movement3, movement4, movement5, movement6, movement7;
-    Action movement1a, movement2a, movement3a, movement4a, movement5a, movement6a, movement7a, movement8a, movement9a;
+    TrajectoryActionBuilder movement1;
+    MecanumDrive.CancelableAction movement1a;
 
     @Override
     public void init() {
@@ -69,11 +48,9 @@ public class Sampsamp extends OpMode {
                 .turnTo(Math.toRadians(175))
                 .turnTo(Math.toRadians(185))
                 .turnTo(Math.toRadians(175))
-                .turnTo(Math.toRadians(185))
-        ;
+                .turnTo(Math.toRadians(185));
 
-
-        movement1a = movement1.build();
+        movement1a = robot.driveSubsystem.cancel(movement1.build());
 
         CommandScheduler.getInstance().schedule(new BucketInitializeCommand(robot));
 
@@ -89,11 +66,11 @@ public class Sampsamp extends OpMode {
     public void start() {
         CommandScheduler.getInstance().schedule(
                 new ParallelCommandGroup(
-                        new ExtendAndSpinCommand(robot, Set.of(YELLOW, BLUE), Globals.EXTENDO_MAX_EXTENSION).whenFinished(() -> Log.i("IntakeToHighBucketAuto", "done")),
-                        new RepeatCommand(
-                                new ActionCommand(movement1a, Collections.emptySet()),
-                                ExtendAndSpinCommand::goofy
-                        )
+                        new ExtendAndSpinCommand(robot, Set.of(YELLOW, BLUE), Globals.EXTENDO_MAX_EXTENSION).whenFinished(() -> {
+                            Log.i("IntakeToHighBucketAuto", "done");
+                            movement1a.cancelAbruptly();
+                        }),
+                                new ActionCommand(movement1a, Collections.emptySet())
                 )
         );
 
