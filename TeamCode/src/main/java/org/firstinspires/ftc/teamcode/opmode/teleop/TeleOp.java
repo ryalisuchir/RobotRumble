@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.opmode.teleop;
 import static org.firstinspires.ftc.teamcode.common.commandbase.commands.Intake.ExtendAndSpinCommand.SampleColorDetected.BLUE;
 import static org.firstinspires.ftc.teamcode.common.commandbase.commands.Intake.ExtendAndSpinCommand.SampleColorDetected.YELLOW;
 
+
+
 import android.graphics.Color;
 
 import com.acmerobotics.roadrunner.Pose2d;
@@ -18,7 +20,9 @@ import com.seattlesolvers.solverslib.command.WaitCommand;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.common.commandbase.commands.Intake.ExtendAndDontSpinCommand;
 import org.firstinspires.ftc.teamcode.common.commandbase.commands.Intake.ExtendAndSpinCommand;
+
 import org.firstinspires.ftc.teamcode.common.commandbase.commands.Outtake.OuttakeDepositHighCommand;
 import org.firstinspires.ftc.teamcode.common.commandbase.commands.Outtake.OuttakeTransferReadyCommand;
 import org.firstinspires.ftc.teamcode.common.commandbase.commands.TransferCommand;
@@ -30,6 +34,9 @@ import org.firstinspires.ftc.teamcode.common.commandbase.commands.Utils.intake.E
 import org.firstinspires.ftc.teamcode.common.commandbase.commands.Utils.intake.GateCommand;
 import org.firstinspires.ftc.teamcode.common.commandbase.commands.Utils.intake.SpinnerCommand;
 import org.firstinspires.ftc.teamcode.common.commandbase.commands.Utils.outtake.ClawCommand;
+import org.firstinspires.ftc.teamcode.common.commandbase.commands.Utils.outtake.OuttakeArmCommand;
+import org.firstinspires.ftc.teamcode.common.commandbase.commands.Utils.outtake.OuttakeSlidesCommand;
+import org.firstinspires.ftc.teamcode.common.commandbase.commands.Utils.outtake.WristCommand;
 import org.firstinspires.ftc.teamcode.common.robot.Globals;
 import org.firstinspires.ftc.teamcode.common.robot.Robot;
 
@@ -41,6 +48,7 @@ public class TeleOp extends CommandOpMode {
     GamepadEx ahnafButtonController;
     public Robot robot;
     public double root = 1;
+    long lastLoopTime = System.nanoTime();
 
     @Override
     public void initialize() {
@@ -53,23 +61,23 @@ public class TeleOp extends CommandOpMode {
 
     @Override
     public void run() {
+        long now = System.nanoTime();
+        double loopTimeMs = (now - lastLoopTime) / 1_000_000.0;
+        lastLoopTime = now;
+        telemetry.addData("Loop: ", "%.2f", loopTimeMs);
+        telemetry.update();
+
         CommandScheduler.getInstance().run();
         robot.extendoSubsystem.extendoSlidesLoop();
         robot.outtakeSlidesSubsystem.outtakeSlidesLoop();
+        robot.clearCache();
 
+        telemetry.addData("woot Motor:", robot.rightLift.getCurrentPosition());
         telemetry.update();
 
         if (gamepad1.ps) {
-            schedule(new ExtendAndSpinCommand(robot, Set.of(YELLOW, BLUE), Globals.EXTENDO_MAX_EXTENSION * 1));
+            schedule(new ExtendAndSpinCommand(robot, Set.of(YELLOW), Globals.EXTENDO_MAX_EXTENSION * 1));
         }
-
-        //AHNAF LOOK HERE FOR NEW COMMAND:
-//        new InstantCommand(() -> {
-//            robot.rightLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//            robot.rightLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-//            robot.leftLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//            robot.leftLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-//        })
 
         robot.pinPointDrive.setDrivePowers(new PoseVelocity2d(
                 new Vector2d(
@@ -123,16 +131,11 @@ public class TeleOp extends CommandOpMode {
         }
         if (gamepad1.left_trigger == 0 && (root ==4 || root == 3)) {
             root = 5;
-            schedule(new SequentialCommandGroup(new SpinnerCommand(robot.spinnerSubsystem, Globals.spinnerState.STOPPED)));
+            schedule(new SequentialCommandGroup(new SpinnerCommand(robot.spinnerSubsystem, Globals.SpinnerState.STOPPED)));
         }
 
-        if (gamepad2.square) {
-            schedule(
-                    new ParallelCommandGroup(
-                            new DropdownCommand(robot, robot.dropdownSubsystem, Globals.DropdownState.READY),
-                            new ExtendoSlidesCommand(robot.extendoSubsystem, Globals.EXTENDO_MAX_EXTENSION*1)
-                    )
-            );
+        if (gamepad1.triangle) {
+            schedule(new ExtendAndDontSpinCommand(robot, Set.of(YELLOW), Globals.EXTENDO_MAX_EXTENSION * 1));
         }
         if (gamepad2.circle) {
             schedule(
@@ -156,23 +159,31 @@ public class TeleOp extends CommandOpMode {
             );
         }
 
+//        if (gamepad1.dpad_right) {
+//            schedule (
+//                    new ParallelCommandGroup(
+//                            new SpinnerCommand(robot.spinnerSubsystem, Globals.SpinnerState.STOPPED),
+//                            new DropdownCommand(robot, robot.dropdownSubsystem, Globals.DropdownState.TRANSFER),
+//                            new ExtendoSlidesCommand(robot.extendoSubsystem, Globals.EXTENDO_MAX_RETRACTION)
+//                    )
+//            );
+//        }
+
+
         if (gamepad1.dpad_right) {
-            schedule (
-                    new ParallelCommandGroup(
-                            new SpinnerCommand(robot.spinnerSubsystem, Globals.SpinnerState.STOPPED),
-                            new DropdownCommand(robot, robot.dropdownSubsystem, Globals.DropdownState.TRANSFER),
-                            new ExtendoSlidesCommand(robot.extendoSubsystem, Globals.EXTENDO_MAX_RETRACTION)
-                    )
-            );
-        }
-
-
-        if (gamepad2.dpad_up) {
             schedule(new OuttakeDepositHighCommand(robot));
         }
 
-        if (gamepad2.dpad_down) {
-            schedule(new OuttakeTransferReadyCommand(robot));
+        if (gamepad1.dpad_left) {
+            schedule( new SequentialCommandGroup(
+                    new ClawCommand(robot.clawSubsystem, Globals.OuttakeClawState.CLOSED),
+                    new ParallelCommandGroup(
+                            new OuttakeSlidesCommand(robot.outtakeSlidesSubsystem, Globals.LIFT_TRANSFER_READY_POS+100),
+                            new OuttakeArmCommand(robot.outtakeArmSubsystem, Globals.OuttakeArmState.TRANSFER),
+                            new WristCommand(robot.wristSubsystem, Globals.OuttakeWristState.TRANSFER)
+                    ),
+                    new ClawCommand(robot.clawSubsystem, Globals.OuttakeClawState.OPEN_TRANSFER)
+            ));
         }
 
         if (gamepad1.left_bumper) {
