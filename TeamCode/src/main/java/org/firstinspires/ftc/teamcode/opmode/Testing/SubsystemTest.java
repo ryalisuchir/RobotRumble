@@ -29,7 +29,7 @@ import org.firstinspires.ftc.teamcode.common.robot.Robot;
 import java.util.Set;
 
 @TeleOp
-public class SuchirTester extends CommandOpMode {
+public class SubsystemTest extends CommandOpMode {
     GamepadEx ahnafButtonController;
     public Robot robot;
     public double root = 1;
@@ -104,7 +104,7 @@ public class SuchirTester extends CommandOpMode {
         telemetry.addData("Root: ", root);
 
         if (gamepad1.triangle) {
-            schedule(new IntakeToHighBucket(robot, Set.of(YELLOW, BLUE), Globals.EXTENDO_MAX_EXTENSION*0.5));
+            schedule(new IntakeToHighBucket(robot, Set.of(YELLOW, BLUE), Globals.EXTENDO_MAX_EXTENSION));
         }
 
         if (gamepad1.cross) {

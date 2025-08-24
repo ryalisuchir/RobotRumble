@@ -7,11 +7,14 @@ import static org.firstinspires.ftc.teamcode.opmode.Testing.ColorSensorHSV.detec
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.seattlesolvers.solverslib.command.CommandBase;
 import com.seattlesolvers.solverslib.command.CommandScheduler;
+import com.seattlesolvers.solverslib.command.DeferredCommand;
 import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.command.ParallelCommandGroup;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import com.seattlesolvers.solverslib.command.UninterruptibleCommand;
 import com.seattlesolvers.solverslib.command.WaitCommand;
+import com.sun.tools.javac.util.List;
+
 import android.graphics.Color;
 
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
@@ -83,7 +86,6 @@ public class ExtendAndSpinCommand extends CommandBase {
             CommandScheduler.getInstance().schedule(
                     new UninterruptibleCommand(
                             new SequentialCommandGroup(
-                                    new OuttakeSlidesCommand(robot.outtakeSlidesSubsystem, Globals.LIFT_TRANSFER_READY_POS),
                                     new WaitCommand(500),
                                     new OuttakeSlidesCommand(robot.outtakeSlidesSubsystem, Globals.LIFT_RETRACT_POS),
                                     new WaitCommand(100),
@@ -93,7 +95,7 @@ public class ExtendAndSpinCommand extends CommandBase {
                                         robot.leftLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                                         robot.leftLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                                     }),
-                                    new InstantCommand(() -> resetDone = true)
+                                    new DeferredCommand(() -> new InstantCommand(() -> resetDone = true), List.nil())
                             )
                     )
             );

@@ -33,7 +33,8 @@ public class DrivingResetExtendoOut extends SequentialCommandGroup {
                                                             robot.leftLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                                                         })
                                                 )
-                                        )
+                                        ),
+                                        new OuttakeTransferReadyCommand(robot)
                                 ),
                                 new GateCommand(robot.gateSubsystem, Globals.GateState.CLOSED),
                                 new SpinnerCommand(robot.spinnerSubsystem, Globals.SpinnerState.STOPPED),

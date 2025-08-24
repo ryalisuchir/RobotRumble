@@ -32,6 +32,7 @@ public class RetractTransferLiftAndExtendCommand extends SequentialCommandGroup 
                         ),
                         new WaitCommand(100),
                         new ClawCommand(robot.clawSubsystem, Globals.OuttakeClawState.CLOSED),
+                        new WaitCommand(100),
                         new ParallelCommandGroup(
                                 new OuttakeDepositHighCommand(robot),
                                 new SequentialCommandGroup(

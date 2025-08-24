@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.opmode.Testing;
 import static org.firstinspires.ftc.teamcode.common.commandbase.commands.Intake.ExtendAndSpinCommand.SampleColorDetected.RED;
 
 import com.qualcomm.hardware.rev.RevColorSensorV3;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -15,6 +16,7 @@ import org.firstinspires.ftc.teamcode.common.robot.Globals;
 
 import java.util.Set;
 
+@Disabled
 @TeleOp(name = "ColorSensorHSV", group = "Sensor")
 public class ColorSensorHSV extends LinearOpMode {
 

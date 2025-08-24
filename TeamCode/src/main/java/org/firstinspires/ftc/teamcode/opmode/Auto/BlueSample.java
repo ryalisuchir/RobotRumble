@@ -25,18 +25,23 @@ import com.seattlesolvers.solverslib.command.WaitCommand;
 
 import org.firstinspires.ftc.teamcode.common.commandbase.commands.ActionCommand;
 import org.firstinspires.ftc.teamcode.common.commandbase.commands.BucketInitializeCommand;
+import org.firstinspires.ftc.teamcode.common.commandbase.commands.Intake.AutoSkib.DrivingResetExtendoOut;
 import org.firstinspires.ftc.teamcode.common.commandbase.commands.Intake.AutoSkib.ExtendAndSpinAndStopCommand;
 import org.firstinspires.ftc.teamcode.common.commandbase.commands.Intake.AutoSkib.JustIntakeEverythingCommand;
+import org.firstinspires.ftc.teamcode.common.commandbase.commands.Intake.AutoSkib.RetractTransferLiftAndExtendCommand;
 import org.firstinspires.ftc.teamcode.common.commandbase.commands.Intake.ExtendAndSpinCommand;
 import org.firstinspires.ftc.teamcode.common.commandbase.commands.Intake.IntakeToHighBucket;
 import org.firstinspires.ftc.teamcode.common.commandbase.commands.Outtake.OuttakeDepositHighCommand;
 import org.firstinspires.ftc.teamcode.common.commandbase.commands.Outtake.OuttakeTransferReadyCommand;
 import org.firstinspires.ftc.teamcode.common.commandbase.commands.Outtake.TransferToDepositHighCommand;
 import org.firstinspires.ftc.teamcode.common.commandbase.commands.TransferCommand;
+import org.firstinspires.ftc.teamcode.common.commandbase.commands.Utils.RetractNResetCommand;
+import org.firstinspires.ftc.teamcode.common.commandbase.commands.Utils.intake.ExtendoSlidesCommand;
 import org.firstinspires.ftc.teamcode.common.commandbase.commands.Utils.outtake.ClawCommand;
 import org.firstinspires.ftc.teamcode.common.commandbase.commands.Utils.outtake.OuttakeSlidesCommand;
 import org.firstinspires.ftc.teamcode.common.robot.Globals;
 import org.firstinspires.ftc.teamcode.common.robot.Robot;
+import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 
 import java.util.Collections;
 import java.util.Set;
@@ -44,8 +49,10 @@ import java.util.Set;
 @Autonomous
 public class BlueSample extends OpMode {
     Robot robot;
-    TrajectoryActionBuilder movement1, movement2, movement3, movement4, movement5, movement6, movement7;
-    Action movement1a, movement2a, movement3a, movement4a, movement5a, movement6a, movement7a, movement8a, movement9a;
+    TrajectoryActionBuilder movement1, movement2, movement3, movement4, movement5, movement6, movement7, movement8, movement9;
+    Action movement1a, movement2a, movement3a, movement4a, movement5a, movement6a, movement8a, movement9a;
+
+    MecanumDrive.CancelableAction movement7a;
 
     @Override
     public void init() {
@@ -92,8 +99,18 @@ public class BlueSample extends OpMode {
                 .splineTo(new Vector2d(26.21, 10.53), Math.toRadians(225.00)); //extendo will be out at this point. slides should come down, reset.
 
         movement7 = movement6.endTrajectory().fresh()
-                .setReversed(false)
-                .splineToLinearHeading(new Pose2d(61, 56.5, Math.toRadians(225)), Math.toRadians(225));
+                .turnTo(Math.toRadians(220))
+                .turnTo(Math.toRadians(230))
+                .turnTo(Math.toRadians(220))
+                .turnTo(Math.toRadians(230))
+                .turnTo(Math.toRadians(220))
+                .turnTo(Math.toRadians(230))
+                .turnTo(Math.toRadians(215))
+                .turnTo(Math.toRadians(235))
+                .turnTo(Math.toRadians(215))
+                .turnTo(Math.toRadians(235))
+                .turnTo(Math.toRadians(215))
+                .turnTo(Math.toRadians(235));
 
         movement1a = movement1.build();
         movement2a = movement2.build();
@@ -101,7 +118,7 @@ public class BlueSample extends OpMode {
         movement4a = movement4.build();
         movement5a = movement5.build();
         movement6a = movement6.build();
-        movement7a = movement7.build();
+        movement7a = robot.driveSubsystem.cancel(movement7.build());
 
         CommandScheduler.getInstance().schedule(new BucketInitializeCommand(robot));
 
@@ -120,61 +137,85 @@ public class BlueSample extends OpMode {
                         new ParallelCommandGroup(
                                 new ActionCommand(movement1a, Collections.emptySet()),
                                 new SequentialCommandGroup(
-                                        new WaitCommand(100),
+                                        new WaitCommand(500),
                                         new OuttakeDepositHighCommand(robot)
                                 )
                         ),
-                        new WaitCommand(100),
                         new ClawCommand(robot.clawSubsystem, Globals.OuttakeClawState.OPEN),
+                        new WaitCommand(100),
                         new ParallelCommandGroup(
-                                new SequentialCommandGroup(
-                                        new OuttakeTransferReadyCommand(robot),
-                                        new UninterruptibleCommand(
-                                                new SequentialCommandGroup(
-                                                        new OuttakeSlidesCommand(robot.outtakeSlidesSubsystem, Globals.LIFT_RETRACT_POS),
-                                                        new WaitCommand(100),
-                                                        new InstantCommand(() -> {
-                                                            robot.rightLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                                                            robot.rightLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                                                            robot.leftLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                                                            robot.leftLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                                                        })
-                                                )
-                                        )
-                                ),
+                                new RetractNResetCommand(robot),
                                 new JustIntakeEverythingCommand(robot, Globals.EXTENDO_MAX_EXTENSION*1.5).whenFinished(() -> Log.i("IntakeToHighBucketAuto", "done"))
                         ),
                         new ParallelCommandGroup(
                                 new ActionCommand(movement2a, Collections.emptySet()),
                                         new SequentialCommandGroup(
                                                 new TransferCommand(robot),
-                                                new OuttakeDepositHighCommand(robot)
+                                                new ParallelCommandGroup(
+                                                        new OuttakeDepositHighCommand(robot),
+                                                        new SequentialCommandGroup(
+                                                                new WaitCommand(500), //wait till slides go up on second samp before slides come out
+                                                                new ExtendoSlidesCommand(robot.extendoSubsystem, Globals.EXTENDO_MAX_EXTENSION)
+                                                        )
+                                                )
                                         )
-                        )
+                        ),
+                        new ClawCommand(robot.clawSubsystem, Globals.OuttakeClawState.OPEN),
+                        new WaitCommand(100),
+                        new ParallelCommandGroup(
+                                new RetractNResetCommand(robot),
+                                new JustIntakeEverythingCommand(robot, Globals.EXTENDO_MAX_EXTENSION*1.5).whenFinished(() -> Log.i("IntakeToHighBucketAuto", "done"))
+                        ),
+                        new ParallelCommandGroup(
+                                new ActionCommand(movement3a, Collections.emptySet()),
+                                new SequentialCommandGroup(
+                                        new TransferCommand(robot),
+                                        new ParallelCommandGroup(
+                                                new OuttakeDepositHighCommand(robot),
+                                                new SequentialCommandGroup(
+                                                        new WaitCommand(500), //wait till slides go up on second samp before slides come out
+                                                        new ExtendoSlidesCommand(robot.extendoSubsystem, Globals.EXTENDO_MAX_EXTENSION*0.4)
+                                                )
+                                        )
+                                )
+                        ),
+                        new ClawCommand(robot.clawSubsystem, Globals.OuttakeClawState.OPEN),
+                        new WaitCommand(100),
+                        new ParallelCommandGroup(
+                                new SequentialCommandGroup(
+                                        new ActionCommand(movement4a, Collections.emptySet()),
+                                        new JustIntakeEverythingCommand(robot, Globals.EXTENDO_MAX_EXTENSION*0.6)
+                                ),
+                                new RetractNResetCommand(robot)
+                        ),
+                        new ParallelCommandGroup(
+                                new ActionCommand(movement5a, Collections.emptySet()),
+                                new SequentialCommandGroup(
+                                        new TransferCommand(robot),
+                                        new ParallelCommandGroup(
+                                                new OuttakeDepositHighCommand(robot),
+                                                new SequentialCommandGroup(
+                                                        new WaitCommand(500), //wait till slides go up on second samp before slides come out
+                                                        new ExtendoSlidesCommand(robot.extendoSubsystem, Globals.EXTENDO_MAX_EXTENSION*0.8)
+                                                )
+                                        )
+                                )
+                        ),
+                        new ParallelCommandGroup( //driving to the sub
+                                new DrivingResetExtendoOut(robot),
+                                new ActionCommand(movement6a, Collections.emptySet())
+                        ),
+                        new ParallelCommandGroup(
+                                new ExtendAndSpinCommand(robot, Set.of(YELLOW, BLUE), Globals.EXTENDO_MAX_EXTENSION).whenFinished(() -> {
+                                    Log.i("IntakeToHighBucketAuto", "done");
+                                    movement7a.cancelAbruptly();
+                                }),
+                                new ActionCommand(movement7a, Collections.emptySet())
+                        ),
+                        new RetractTransferLiftAndExtendCommand(robot)
                 )
         );
 
-    }
-
-    private String detectColor(float hue, float sat, float val) {
-        if (val < 0.2) return "Too Dark";
-
-        // RED
-        if ((hue >= 0 && hue <= 25) || (hue >= 330 && hue <= 360)) {
-            if (sat > 0.4 && val > 0.2) return "Red";
-        }
-
-        // BLUE
-        if (hue >= 200 && hue <= 250) {
-            if (sat > 0.4 && val > 0.2) return "Blue";
-        }
-
-        // YELLOW
-        if (hue >= 65 && hue <= 100) {
-            if (sat > 0.7 && val > 12) return "Yellow";
-        }
-
-        return "Unknown";
     }
 
     @Override
@@ -183,21 +224,6 @@ public class BlueSample extends OpMode {
         robot.driveSubsystem.updatePoseEstimate();
         robot.extendoSubsystem.extendoSlidesLoop();
         robot.outtakeSlidesSubsystem.outtakeSlidesLoop();
-        float[] hsv = new float[3];
-        int r = robot.colorSensor.red();
-        int g = robot.colorSensor.green();
-        int b = robot.colorSensor.blue();
-
-        // Normalize and convert to HSV
-        Color.RGBToHSV(r * 8, g * 8, b * 8, hsv); // Scale to 0–255
-
-        float hue = hsv[0];
-        float sat = hsv[1];
-        float val = hsv[2];
-
-        String colorDetected = detectColor(hue, sat, val);
-
-        telemetry.addData("Detected Color", colorDetected);
 
         robot.clearCache();
 

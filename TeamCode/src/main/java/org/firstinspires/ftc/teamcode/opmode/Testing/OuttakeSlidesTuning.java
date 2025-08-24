@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.Range;
 
+@Disabled
 @Config
 @TeleOp(name = "Slides Test with Dashboard", group = "Test")
 public class OuttakeSlidesTuning extends LinearOpMode {

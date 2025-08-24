@@ -76,48 +76,12 @@ public class Sampsamp extends OpMode {
 
     }
 
-    private String detectColor(float hue, float sat, float val) {
-        if (val < 0.2) return "Too Dark";
-
-        // RED
-        if ((hue >= 0 && hue <= 25) || (hue >= 330 && hue <= 360)) {
-            if (sat > 0.4 && val > 0.2) return "Red";
-        }
-
-        // BLUE
-        if (hue >= 200 && hue <= 250) {
-            if (sat > 0.4 && val > 0.2) return "Blue";
-        }
-
-        // YELLOW
-        if (hue >= 65 && hue <= 100) {
-            if (sat > 0.7 && val > 12) return "Yellow";
-        }
-
-        return "Unknown";
-    }
-
     @Override
     public void loop() {
         CommandScheduler.getInstance().run();
         robot.driveSubsystem.updatePoseEstimate();
         robot.extendoSubsystem.extendoSlidesLoop();
         robot.outtakeSlidesSubsystem.outtakeSlidesLoop();
-        float[] hsv = new float[3];
-        int r = robot.colorSensor.red();
-        int g = robot.colorSensor.green();
-        int b = robot.colorSensor.blue();
-
-        // Normalize and convert to HSV
-        Color.RGBToHSV(r * 8, g * 8, b * 8, hsv); // Scale to 0–255
-
-        float hue = hsv[0];
-        float sat = hsv[1];
-        float val = hsv[2];
-
-        String colorDetected = detectColor(hue, sat, val);
-
-        telemetry.addData("Detected Color", colorDetected);
 
         robot.clearCache();
 
