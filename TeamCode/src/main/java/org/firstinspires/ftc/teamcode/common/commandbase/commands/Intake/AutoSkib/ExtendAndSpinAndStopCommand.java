@@ -49,8 +49,6 @@ public class ExtendAndSpinAndStopCommand extends CommandBase {
         this.targetColors = targetColors;
         this.extendoTargetPosition = extendoTargetPosition;
         this.robot = robot;
-
-//        addRequirements(robot.extendoSubsystem, robot.spinnerSubsystem, robot.gateSubsystem); i um don't like solverslib anymore
     }
 
 

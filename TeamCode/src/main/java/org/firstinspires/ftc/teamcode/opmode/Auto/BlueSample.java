@@ -49,10 +49,10 @@ import java.util.Set;
 @Autonomous
 public class BlueSample extends OpMode {
     Robot robot;
-    TrajectoryActionBuilder movement1, movement2, movement3, movement4, movement5, movement6, movement7, movement8, movement9;
-    Action movement1a, movement2a, movement3a, movement4a, movement5a, movement6a, movement8a, movement9a;
+    TrajectoryActionBuilder movement1, movement2, movement3, movement4, movement5, movement6, movement7, movement8, movement9, movement10, movement11, movement12, movement13;
+    Action movement1a, movement2a, movement3a, movement4a, movement5a, movement6a, movement8a, movement9a, movement11a, movement12a, movement13a;
 
-    MecanumDrive.CancelableAction movement7a;
+    MecanumDrive.CancelableAction movement7a, movement10a;
 
     @Override
     public void init() {
@@ -112,6 +112,32 @@ public class BlueSample extends OpMode {
                 .turnTo(Math.toRadians(215))
                 .turnTo(Math.toRadians(235));
 
+        movement8 = movement7.endTrajectory().fresh()
+                .setReversed(true)
+                .splineTo(new Vector2d(57.37, 52.32), Math.toRadians(45));
+
+        movement9 = movement8.endTrajectory().fresh()
+                .setReversed(false)
+                .splineTo(new Vector2d(26.21, 10.53), Math.toRadians(225.00)); //extendo will be out at this point. slides should come down, reset.
+
+        movement10 = movement9.endTrajectory().fresh()
+                .turnTo(Math.toRadians(220))
+                .turnTo(Math.toRadians(230))
+                .turnTo(Math.toRadians(220))
+                .turnTo(Math.toRadians(230))
+                .turnTo(Math.toRadians(220))
+                .turnTo(Math.toRadians(230))
+                .turnTo(Math.toRadians(215))
+                .turnTo(Math.toRadians(235))
+                .turnTo(Math.toRadians(215))
+                .turnTo(Math.toRadians(235))
+                .turnTo(Math.toRadians(215))
+                .turnTo(Math.toRadians(235));
+
+        movement11 = movement10.endTrajectory().fresh()
+                .setReversed(true)
+                .splineTo(new Vector2d(57.37, 52.32), Math.toRadians(45));
+
         movement1a = movement1.build();
         movement2a = movement2.build();
         movement3a = movement3.build();
@@ -119,6 +145,10 @@ public class BlueSample extends OpMode {
         movement5a = movement5.build();
         movement6a = movement6.build();
         movement7a = robot.driveSubsystem.cancel(movement7.build());
+        movement8a = movement8.build();
+        movement9a = movement9.build();
+        movement10a = robot.driveSubsystem.cancel(movement10.build());
+        movement11a = movement11.build();
 
         CommandScheduler.getInstance().schedule(new BucketInitializeCommand(robot));
 
@@ -145,7 +175,7 @@ public class BlueSample extends OpMode {
                         new WaitCommand(100),
                         new ParallelCommandGroup(
                                 new RetractNResetCommand(robot),
-                                new JustIntakeEverythingCommand(robot, Globals.EXTENDO_MAX_EXTENSION*1.5).whenFinished(() -> Log.i("IntakeToHighBucketAuto", "done"))
+                                new UninterruptibleCommand(new JustIntakeEverythingCommand(robot, Globals.EXTENDO_MAX_EXTENSION*1.5).whenFinished(() -> Log.i("IntakeToHighBucketAuto", "done")))
                         ),
                         new ParallelCommandGroup(
                                 new ActionCommand(movement2a, Collections.emptySet()),
@@ -164,7 +194,7 @@ public class BlueSample extends OpMode {
                         new WaitCommand(100),
                         new ParallelCommandGroup(
                                 new RetractNResetCommand(robot),
-                                new JustIntakeEverythingCommand(robot, Globals.EXTENDO_MAX_EXTENSION*1.5).whenFinished(() -> Log.i("IntakeToHighBucketAuto", "done"))
+                                new UninterruptibleCommand(new JustIntakeEverythingCommand(robot, Globals.EXTENDO_MAX_EXTENSION*1.5).whenFinished(() -> Log.i("IntakeToHighBucketAuto", "done")))
                         ),
                         new ParallelCommandGroup(
                                 new ActionCommand(movement3a, Collections.emptySet()),
@@ -184,7 +214,7 @@ public class BlueSample extends OpMode {
                         new ParallelCommandGroup(
                                 new SequentialCommandGroup(
                                         new ActionCommand(movement4a, Collections.emptySet()),
-                                        new JustIntakeEverythingCommand(robot, Globals.EXTENDO_MAX_EXTENSION*0.6)
+                                        new UninterruptibleCommand(new JustIntakeEverythingCommand(robot, Globals.EXTENDO_MAX_EXTENSION*1.5).whenFinished(() -> Log.i("IntakeToHighBucketAuto", "done")))
                                 ),
                                 new RetractNResetCommand(robot)
                         ),
@@ -200,19 +230,41 @@ public class BlueSample extends OpMode {
                                                 )
                                         )
                                 )
-                        ),
-                        new ParallelCommandGroup( //driving to the sub
-                                new DrivingResetExtendoOut(robot),
-                                new ActionCommand(movement6a, Collections.emptySet())
-                        ),
-                        new ParallelCommandGroup(
-                                new ExtendAndSpinCommand(robot, Set.of(YELLOW, BLUE), Globals.EXTENDO_MAX_EXTENSION).whenFinished(() -> {
-                                    Log.i("IntakeToHighBucketAuto", "done");
-                                    movement7a.cancelAbruptly();
-                                }),
-                                new ActionCommand(movement7a, Collections.emptySet())
-                        ),
-                        new RetractTransferLiftAndExtendCommand(robot)
+                        )
+//                        new ParallelCommandGroup( //driving to the sub for 1
+//                                new DrivingResetExtendoOut(robot),
+//                                new ActionCommand(movement6a, Collections.emptySet())
+//                        ),
+//                        new ParallelCommandGroup(
+//                                new ExtendAndSpinCommand(robot, Set.of(YELLOW, BLUE), Globals.EXTENDO_MAX_EXTENSION).whenFinished(() -> {
+//                                    Log.i("IntakeToHighBucketAuto", "done");
+//                                    movement7a.cancelAbruptly();
+//                                }),
+//                                new ActionCommand(movement7a, Collections.emptySet())
+//                        ),
+//                        new ParallelCommandGroup(
+//                                new RetractTransferLiftAndExtendCommand(robot),
+//                                new ActionCommand(movement8a, Collections.emptySet())
+//                        ),
+//                        new ClawCommand(robot.clawSubsystem, Globals.OuttakeClawState.OPEN),
+//                        new WaitCommand(100),
+//                        new ParallelCommandGroup( //driving to the sub for 2!!
+//                                new DrivingResetExtendoOut(robot),
+//                                new ActionCommand(movement9a, Collections.emptySet())
+//                        ),
+//                        new ParallelCommandGroup(
+//                                new ExtendAndSpinCommand(robot, Set.of(YELLOW, BLUE), Globals.EXTENDO_MAX_EXTENSION).whenFinished(() -> {
+//                                    Log.i("IntakeToHighBucketAuto", "done");
+//                                    movement10a.cancelAbruptly();
+//                                }),
+//                                new ActionCommand(movement10a, Collections.emptySet())
+//                        ),
+//                        new ParallelCommandGroup(
+//                                new RetractTransferLiftAndExtendCommand(robot),
+//                                new ActionCommand(movement11a, Collections.emptySet())
+//                        ),
+//                        new ClawCommand(robot.clawSubsystem, Globals.OuttakeClawState.OPEN),
+//                        new WaitCommand(100)
                 )
         );
 

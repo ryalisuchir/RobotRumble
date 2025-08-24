@@ -72,6 +72,8 @@ public class SubsystemTest extends CommandOpMode {
         telemetry.addData("Extendo:", robot.extendoMotor.getCurrentPosition());
         telemetry.addData("Lift:", robot.rightLift.getCurrentPosition());
 
+        robot.clearCache();
+
         telemetry.addData("Distance:", robot.colorSensor.getDistance(DistanceUnit.CM));
         float[] hsv = new float[3];
         int r = robot.colorSensor.red();

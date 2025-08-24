@@ -45,8 +45,6 @@ public class ExtendAndDontSpinCommand extends CommandBase {
     ) {
         this.extendoTargetPosition = extendoTargetPosition;
         this.robot = robot;
-
-//        addRequirements(robot.extendoSubsystem, robot.spinnerSubsystem, robot.gateSubsystem); i um don't like solverslib anymore
     }
 
     @Override

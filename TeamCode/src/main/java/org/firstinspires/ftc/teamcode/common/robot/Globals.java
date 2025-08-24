@@ -20,16 +20,16 @@ public class Globals {
     public static Pose2d BLUE_FAR_START_POSE = new Pose2d(-7, 66.43, Math.toRadians(-90));
 
     // Lift Subsystem Constants
-    public static double LIFT_HIGH_POS = 940;
+    public static double LIFT_HIGH_POS = 930;
     public static double LIFT_MID_POS = 260;
     public static double LIFT_PARK_POS = 0;
-    public static double LIFT_TRANSFER_POS = 85;
+    public static double LIFT_TRANSFER_POS = 80;
     public static double LIFT_TRANSFER_READY_POS = 95;
     public static double LIFT_READY_DEPOSIT_POS = 100; //after transfer, before bucket placement (maybe this is the same as mid?)
     public static double LIFT_SPECIMEN_GRAB_POS = 0;
     public static double LIFT_SPECIMEN_DEPOSIT_POS = 505;
     public static double LIFT_RETRACT_POS = 0;
-    public static double LIFT_MAX_TOLERANCE = 25;
+    public static double LIFT_MAX_TOLERANCE = 15;
 
     //Extendo Subsystem Constants
     public static double EXTENDO_MAX_EXTENSION = 517;
@@ -62,7 +62,7 @@ public class Globals {
     public static double OUTTAKE_WRIST_BUCKET = 0.82;
 
     //Outtake Arm Constants:
-    public static double OUTTAKE_ARM_TRANSFER = 1;
+    public static double OUTTAKE_ARM_TRANSFER = .98;
     public static double OUTTAKE_ARM_SPECIMEN_GRAB = 0;
     public static double OUTTAKE_ARM_SPECIMEN_DEPOSIT = 0.64;
     public static double OUTTAKE_ARM_BUCKET = 0.3;
