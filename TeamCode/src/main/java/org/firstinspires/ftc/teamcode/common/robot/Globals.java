@@ -157,4 +157,11 @@ public class Globals {
         SPEC_REST
     }
 
+    public enum SampleColorDetected {
+        RED,
+        BLUE,
+        YELLOW,
+        NONE
+    }
+
 }
