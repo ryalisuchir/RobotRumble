@@ -13,6 +13,7 @@ import com.seattlesolvers.solverslib.command.WaitCommand;
 import com.sun.tools.javac.util.List;
 
 import org.firstinspires.ftc.teamcode.common.commandbase.commands.utility.intake.ExtendoSlidesCommand;
+import org.firstinspires.ftc.teamcode.common.commandbase.commands.utility.outtake.ClawCommand;
 import org.firstinspires.ftc.teamcode.common.commandbase.commands.utility.outtake.OuttakeArmCommand;
 import org.firstinspires.ftc.teamcode.common.commandbase.commands.utility.outtake.OuttakeSlidesCommand;
 import org.firstinspires.ftc.teamcode.common.commandbase.commands.utility.outtake.WristCommand;
@@ -24,13 +25,8 @@ public class DropResetReadyCmd extends SequentialCommandGroup {
     public DropResetReadyCmd(Robot robot) {
         addCommands(
                 new ParallelCommandGroup(
-                        new OuttakeArmCommand(robot.outtakeArmSubsystem, Globals.OuttakeArmState.TRANSFER),
-                        new WristCommand(robot.wristSubsystem, Globals.OuttakeWristState.TRANSFER),
-                        new DeferredCommand(() -> new ConditionalCommand(
-                                new ExtendoSlidesCommand(robot.extendoSubsystem, Globals.EXTENDO_MAX_EXTENSION* EXTENDO_TRANSFER_FACTOR),
-                                null,
-                                () -> ExtendoSubsystem.setPoint < (Globals.EXTENDO_MAX_EXTENSION*EXTENDO_TRANSFER_FACTOR)+1 //in case java is dumb
-                        ), List.nil()),
+                        new OuttakeArmCommand(robot.outtakeArmSubsystem, Globals.OuttakeArmState.SPECIMEN_DEPOSIT),
+                        new WristCommand(robot.wristSubsystem, Globals.OuttakeWristState.SPECIMEN_DEPOSIT),
                                 new SequentialCommandGroup(
                                         new OuttakeSlidesCommand(robot.outtakeSlidesSubsystem, Globals.LIFT_RETRACT_POS),
                                         new WaitCommand(100),
@@ -41,7 +37,18 @@ public class DropResetReadyCmd extends SequentialCommandGroup {
                                             robot.leftLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                                             robot.leftLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                                         }),
-                                        new TransferReadyCmd(robot)))
+                                                new WaitCommand(50),
+                                                new ParallelCommandGroup(
+                                                        new OuttakeSlidesCommand(robot.outtakeSlidesSubsystem, Globals.LIFT_TRANSFER_READY_POS),
+                                                        new SequentialCommandGroup(
+                                                                new WaitCommand(150),
+                                                                new ParallelCommandGroup(
+                                                                        new OuttakeArmCommand(robot.outtakeArmSubsystem, Globals.OuttakeArmState.TRANSFER),
+                                                                        new WristCommand(robot.wristSubsystem, Globals.OuttakeWristState.TRANSFER),
+                                                                        new ClawCommand(robot.clawSubsystem, Globals.OuttakeClawState.OPEN_TRANSFER)
+                                                                )
+                                                        )
+                                                )))
                         )
                 )
         );
