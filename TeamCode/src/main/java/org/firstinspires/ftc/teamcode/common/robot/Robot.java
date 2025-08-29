@@ -45,7 +45,6 @@ public class Robot {
     public ServoImplEx intakeCoaxialLeft, intakeCoaxialRight; //Dropdown
     public ServoImplEx gate; //Micro for intake gate
     public ServoImplEx outtakeClaw, outtakeWrist, outtakeArm; //All outtake
-    public ServoImplEx leftPto, rightPto; //PTO Hang
     public CRServo leftHang, rightHang; //Level 2 Hang
 
     public List<LynxModule> allHubs;
@@ -122,8 +121,6 @@ public class Robot {
         outtakeArm = hardwareMap.get(ServoImplEx.class, "outtakeArm");
         leftHang = hardwareMap.get(CRServo.class, "leftHang");
         rightHang = hardwareMap.get(CRServo.class, "rightHang");
-        leftPto = hardwareMap.get(ServoImplEx.class, "leftPto");
-        rightPto = hardwareMap.get(ServoImplEx.class, "rightPto");
 
         intakeCoaxialRight.setDirection(Servo.Direction.REVERSE);
 
