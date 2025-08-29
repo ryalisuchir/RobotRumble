@@ -24,11 +24,12 @@ import org.firstinspires.ftc.teamcode.common.robot.Robot;
 public class DropResetReadyCmd extends SequentialCommandGroup {
     public DropResetReadyCmd(Robot robot) {
         addCommands(
-                new ParallelCommandGroup(
-                        new OuttakeArmCommand(robot.outtakeArmSubsystem, Globals.OuttakeArmState.SPECIMEN_DEPOSIT),
-                        new WristCommand(robot.wristSubsystem, Globals.OuttakeWristState.SPECIMEN_DEPOSIT),
-                                new SequentialCommandGroup(
-                                        new OuttakeSlidesCommand(robot.outtakeSlidesSubsystem, Globals.LIFT_RETRACT_POS),
+                new SequentialCommandGroup(
+                        new ParallelCommandGroup(
+                                new OuttakeSlidesCommand(robot.outtakeSlidesSubsystem, Globals.LIFT_RETRACT_POS),
+                                new OuttakeArmCommand(robot.outtakeArmSubsystem, Globals.OuttakeArmState.SPECIMEN_DEPOSIT),
+                                new WristCommand(robot.wristSubsystem, Globals.OuttakeWristState.SPECIMEN_DEPOSIT)
+                        ),
                                         new WaitCommand(100),
                                         new UninterruptibleCommand(new SequentialCommandGroup(
                                                 new InstantCommand(() -> {
@@ -48,8 +49,8 @@ public class DropResetReadyCmd extends SequentialCommandGroup {
                                                                         new ClawCommand(robot.clawSubsystem, Globals.OuttakeClawState.OPEN_TRANSFER)
                                                                 )
                                                         )
-                                                )))
-                        )
+                                                ))
+                                        )
                 )
         );
     }
