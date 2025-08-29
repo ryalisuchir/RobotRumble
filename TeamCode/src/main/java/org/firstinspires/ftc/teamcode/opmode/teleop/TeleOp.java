@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.common.commandbase.commands.intake.ExtendN
 import org.firstinspires.ftc.teamcode.common.commandbase.commands.intake.RaiseStopCmd;
 import org.firstinspires.ftc.teamcode.common.commandbase.commands.intake.teleop.ReverseCmd;
 import org.firstinspires.ftc.teamcode.common.commandbase.commands.intake.teleop.ReverseDownCmd;
-import org.firstinspires.ftc.teamcode.common.commandbase.commands.outtake.BucketCmd;
+import org.firstinspires.ftc.teamcode.common.commandbase.commands.outtake.auto.RaisedBucketCmd;
 import org.firstinspires.ftc.teamcode.common.commandbase.commands.outtake.SpecDepCmd;
 import org.firstinspires.ftc.teamcode.common.commandbase.commands.outtake.SpecGrabCmd;
 import org.firstinspires.ftc.teamcode.common.commandbase.commands.transfer.DropResetReadyCmd;
@@ -115,7 +115,7 @@ public class TeleOp extends CommandOpMode {
         //Swetha's Controls:
         if (swethaController.dpad_up) {
             schedule(
-                    new BucketCmd(robot,Globals.LIFT_HIGH_POS)
+                    new RaisedBucketCmd(robot,Globals.LIFT_HIGH_POS)
             );
         }
 
