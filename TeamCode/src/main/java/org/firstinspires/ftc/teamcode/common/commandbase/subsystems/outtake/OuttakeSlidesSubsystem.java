@@ -40,7 +40,7 @@ public class OuttakeSlidesSubsystem extends SubsystemBase {
 
             slidePIDF.setSetPoint(setPoint);
 
-            double power = Range.clip(slidePIDF.calculate(motorPosition, setPoint), -1, 1);
+            double power = Range.clip(slidePIDF.calculate(motorPosition, setPoint), -0.8, 1);
 
         if (Math.abs(power - lastPower) > 0.03) {
             leftLift.setPower(power);
