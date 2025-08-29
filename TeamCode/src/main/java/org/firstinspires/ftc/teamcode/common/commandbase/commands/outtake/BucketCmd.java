@@ -17,14 +17,13 @@ public class BucketCmd extends SequentialCommandGroup {
                 new ParallelCommandGroup(
                         new SequentialCommandGroup(
                                 new WaitCommand(150),
-                        new ParallelCommandGroup(
-                                new WristCommand(robot.wristSubsystem, Globals.OuttakeWristState.UP),
-                                new OuttakeArmCommand(robot.outtakeArmSubsystem, Globals.OuttakeArmState.BUCKET_IDEAL),
-                                new DropdownCommand(robot, robot.dropdownSubsystem, Globals.DropdownState.TRANSFER)
-                        )
-                                ),
-                        new OuttakeSlidesCommand(robot.outtakeSlidesSubsystem, pos),
-                        new WristCommand(robot.wristSubsystem, Globals.OuttakeWristState.BUCKET_IDEAL)
+                                new ParallelCommandGroup(
+                                        new WristCommand(robot.wristSubsystem, Globals.OuttakeWristState.BUCKET_IDEAL),
+                                        new OuttakeArmCommand(robot.outtakeArmSubsystem, Globals.OuttakeArmState.BUCKET_IDEAL),
+                                        new DropdownCommand(robot, robot.dropdownSubsystem, Globals.DropdownState.TRANSFER)
+                                )
+                        ),
+                                new OuttakeSlidesCommand(robot.outtakeSlidesSubsystem, pos)
                 )
         );
     }
