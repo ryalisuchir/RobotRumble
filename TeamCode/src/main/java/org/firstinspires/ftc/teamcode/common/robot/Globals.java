@@ -68,8 +68,8 @@ public class Globals {
     public static double OUTTAKE_WRIST_SPECIMEN_DEPOSIT = 0.2;
     public static double OUTTAKE_WRIST_TRANSFER = 0;
     public static double OUTTAKE_WRIST_BUCKET = 0.82;
-    public static double OUTTAKE_WRIST_SAMP_REST = 0.9;
-    public static double OUTTAKE_WRIST_SPEC_REST= 0.4;
+    public static double OUTTAKE_WRIST_SAMP_REST = 0.82;
+    public static double OUTTAKE_WRIST_SPEC_REST= 0.2;
     public static double OUTTAKE_WRIST_UP = 0.5;
 
     //Outtake Arm Constants:
@@ -77,8 +77,8 @@ public class Globals {
     public static double OUTTAKE_ARM_SPECIMEN_GRAB = 0;
     public static double OUTTAKE_ARM_SPECIMEN_DEPOSIT = 0.64;
     public static double OUTTAKE_ARM_BUCKET = 0.3;
-    public static double OUTTAKE_ARM_SAMP_REST = 0;
-    public static double OUTTAKE_ARM_SPEC_REST= 0.6;
+    public static double OUTTAKE_ARM_SAMP_REST = 0.3;
+    public static double OUTTAKE_ARM_SPEC_REST= 0.64;
 
     public static double MIN_DISTANCE_THRESHOLD = 1.35;
     public static double MAX_DISTANCE_THRESHOLD = 2.5;

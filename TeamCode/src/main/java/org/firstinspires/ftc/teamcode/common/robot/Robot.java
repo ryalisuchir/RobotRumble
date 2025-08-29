@@ -41,7 +41,6 @@ public class Robot {
     public OuttakeSlidesSubsystem outtakeSlidesSubsystem;
     public WristSubsystem wristSubsystem;
 
-
     public ServoImplEx intakeCoaxialLeft, intakeCoaxialRight; //Dropdown
     public ServoImplEx gate; //Micro for intake gate
     public ServoImplEx outtakeClaw, outtakeWrist, outtakeArm; //All outtake
