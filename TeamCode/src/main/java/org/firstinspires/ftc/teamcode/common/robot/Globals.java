@@ -60,8 +60,8 @@ public class Globals {
 
     //Outtake Claw Constants
     public static double OUTTAKE_CLAW_OPEN = 0.6;
-    public static double OUTTAKE_CLAW_TRANSFER_OPEN = 0.7;
-    public static double OUTTAKE_CLAW_CLOSE = 0.52;
+    public static double OUTTAKE_CLAW_TRANSFER_OPEN = 0.61;
+    public static double OUTTAKE_CLAW_CLOSE = 0.45;
 
     //Outtake Wrist Constants
     public static double OUTTAKE_WRIST_SPECIMEN_GRAB = 1;
