@@ -1,0 +1,49 @@
+package org.firstinspires.ftc.teamcode.common.commandbase.commands.transfer;
+
+import static org.firstinspires.ftc.teamcode.common.robot.Globals.EXTENDO_TRANSFER_FACTOR;
+
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.seattlesolvers.solverslib.command.ConditionalCommand;
+import com.seattlesolvers.solverslib.command.DeferredCommand;
+import com.seattlesolvers.solverslib.command.InstantCommand;
+import com.seattlesolvers.solverslib.command.ParallelCommandGroup;
+import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
+import com.seattlesolvers.solverslib.command.UninterruptibleCommand;
+import com.seattlesolvers.solverslib.command.WaitCommand;
+import com.sun.tools.javac.util.List;
+
+import org.firstinspires.ftc.teamcode.common.commandbase.commands.utility.intake.ExtendoSlidesCommand;
+import org.firstinspires.ftc.teamcode.common.commandbase.commands.utility.outtake.OuttakeArmCommand;
+import org.firstinspires.ftc.teamcode.common.commandbase.commands.utility.outtake.OuttakeSlidesCommand;
+import org.firstinspires.ftc.teamcode.common.commandbase.commands.utility.outtake.WristCommand;
+import org.firstinspires.ftc.teamcode.common.commandbase.subsystems.intake.ExtendoSubsystem;
+import org.firstinspires.ftc.teamcode.common.robot.Globals;
+import org.firstinspires.ftc.teamcode.common.robot.Robot;
+
+public class DropResetReadyCmd extends SequentialCommandGroup {
+    public DropResetReadyCmd(Robot robot) {
+        addCommands(
+                new ParallelCommandGroup(
+                        new OuttakeArmCommand(robot.outtakeArmSubsystem, Globals.OuttakeArmState.TRANSFER),
+                        new WristCommand(robot.wristSubsystem, Globals.OuttakeWristState.TRANSFER),
+                        new DeferredCommand(() -> new ConditionalCommand(
+                                new ExtendoSlidesCommand(robot.extendoSubsystem, Globals.EXTENDO_MAX_EXTENSION* EXTENDO_TRANSFER_FACTOR),
+                                null,
+                                () -> ExtendoSubsystem.setPoint < (Globals.EXTENDO_MAX_EXTENSION*EXTENDO_TRANSFER_FACTOR)+1 //in case java is dumb
+                        ), List.nil()),
+                                new SequentialCommandGroup(
+                                        new OuttakeSlidesCommand(robot.outtakeSlidesSubsystem, Globals.LIFT_RETRACT_POS),
+                                        new WaitCommand(100),
+                                        new UninterruptibleCommand(new SequentialCommandGroup(
+                                                new InstantCommand(() -> {
+                                            robot.rightLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                                            robot.rightLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                                            robot.leftLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                                            robot.leftLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                                        }),
+                                        new TransferReadyCmd(robot)))
+                        )
+                )
+        );
+    }
+}

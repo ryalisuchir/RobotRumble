@@ -13,11 +13,11 @@ import org.firstinspires.ftc.teamcode.common.robot.Globals;
 public class OuttakeSlidesSubsystem extends SubsystemBase {
     public static double p = 0.015;
     public static double i = 0;
-    public static double d = 0.0;
+    public static double d = 0;
     public static double f = 0;
+    private double lastPower = 0.0;
     private static final PIDFController slidePIDF = new PIDFController(p, i, d, f);
     public static double setPoint = 0;
-    public static double maxPowerConstant = 1.0;
     public final DcMotorEx leftLift, rightLift;
     public ElapsedTime timer = new ElapsedTime();
     int motorPosition;
@@ -33,8 +33,6 @@ public class OuttakeSlidesSubsystem extends SubsystemBase {
 
         motorPosition = rightLift.getCurrentPosition();
 
-        if (Math.abs(motorPosition-setPoint) < 5) { rightLift.setPower(0); leftLift.setPower(0); } else {
-
             slidePIDF.setP(p);
             slidePIDF.setI(i);
             slidePIDF.setD(d);
@@ -42,11 +40,12 @@ public class OuttakeSlidesSubsystem extends SubsystemBase {
 
             slidePIDF.setSetPoint(setPoint);
 
-            double maxPower = (f * motorPosition) + maxPowerConstant;
-            double power = Range.clip(slidePIDF.calculate(motorPosition, setPoint), -0.6, maxPower);
+            double power = Range.clip(slidePIDF.calculate(motorPosition, setPoint), -1, 1);
 
+        if (Math.abs(power - lastPower) > 0.03) {
             leftLift.setPower(power);
             rightLift.setPower(power);
+            lastPower = power;
         }
     }
 

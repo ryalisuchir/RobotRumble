@@ -30,6 +30,12 @@ public class OuttakeArmSubsystem extends SubsystemBase {
             case SPECIMEN_DEPOSIT:
                 outtakeArm.setPosition(Globals.OUTTAKE_ARM_SPECIMEN_DEPOSIT);
                 break;
+            case SAMP_REST:
+                outtakeArm.setPosition(Globals.OUTTAKE_ARM_SAMP_REST);
+                break;
+            case SPEC_REST:
+                outtakeArm.setPosition(Globals.OUTTAKE_ARM_SPEC_REST);
+                break;
         }
     }
 

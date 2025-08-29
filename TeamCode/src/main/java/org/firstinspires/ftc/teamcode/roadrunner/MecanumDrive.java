@@ -55,41 +55,33 @@ import java.util.List;
 @Config
 public class MecanumDrive {
     public static class Params {
-        // IMU orientation
-        // TODO: fill in these values based on
-        //   see https://ftc-docs.firstinspires.org/en/latest/programming_resources/imu/imu.html?highlight=imu#physical-hub-mounting
         public RevHubOrientationOnRobot.LogoFacingDirection logoFacingDirection =
                 RevHubOrientationOnRobot.LogoFacingDirection.FORWARD;
         public RevHubOrientationOnRobot.UsbFacingDirection usbFacingDirection =
                 RevHubOrientationOnRobot.UsbFacingDirection.RIGHT;
 
-        // drive model parameters
-        public double inPerTick = 0.9934657051; // SparkFun OTOS Note: you can probably leave this at 1
-        public double lateralInPerTick = 0.46640697127345; //0.736834497757;// OTOS: 0.872882;
-        public double trackWidthTicks = 13.58; //12.791; // otos 12.66;
+        public double inPerTick = 0.9934657051;
+        public double lateralInPerTick = 0.46640697127345;
+        public double trackWidthTicks = 13.58;
 
-        // feedforward parameters (in tick units)
-        public double kS = 1.5671283484155358; //0.7635681070147831; // OTOS: 0.563756515907424;
-        public double kV = 0.1335; //0.1946438443334511; // OTOS:0.19141851548064043;
+        public double kS = 1.5671283484155358;
+        public double kV = 0.1335;
         public double kA = 0.038;
 
-        // path profile parameters (in inches)
-        public double maxWheelVel = 72; // 50
+        public double maxWheelVel = 72;
         public double minProfileAccel = -45;
         public double maxProfileAccel = 85;
 
-        // turn profile parameters (in radians)
-        public double maxAngVel = Math.PI; // shared with path
+        public double maxAngVel = Math.PI;
         public double maxAngAccel = 5;
 
-        // path controller gains
         public double axialGain = 4.2;
         public double lateralGain = 6.3;
-        public double headingGain = 5; // shared with turn
+        public double headingGain = 5;
 
         public double axialVelGain = 0.0;
         public double lateralVelGain = 0.0;
-        public double headingVelGain = 0.0; // shared with turn
+        public double headingVelGain = 0.0;
     }
 
     public static Params PARAMS = new Params();
@@ -138,9 +130,6 @@ public class MecanumDrive {
             rightFront = new OverflowEncoder(new RawEncoder(MecanumDrive.this.rightFront));
 
             imu = lazyImu.get();
-
-            // TODO: reverse encoders if needed
-            //   leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
         }
 
         @Override
@@ -216,8 +205,6 @@ public class MecanumDrive {
             module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
 
-        // TODO: make sure your config has motors with these names (or change them)
-        //   see https://ftc-docs.firstinspires.org/en/latest/hardware_and_software_configuration/configuring/index.html
         leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
         leftBack = hardwareMap.get(DcMotorEx.class, "leftRear");
         rightBack = hardwareMap.get(DcMotorEx.class, "rightRear");
@@ -228,12 +215,9 @@ public class MecanumDrive {
         rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        // TODO: reverse motor directions if needed
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
         leftBack.setDirection(DcMotorSimple.Direction.FORWARD);
 
-        // TODO: make sure your config has an IMU with this name (can be BNO or BHI)
-        //   see https://ftc-docs.firstinspires.org/en/latest/hardware_and_software_configuration/configuring/index.html
         lazyImu = new LazyImu(hardwareMap, "imu", new RevHubOrientationOnRobot(
                 PARAMS.logoFacingDirection, PARAMS.usbFacingDirection));
 

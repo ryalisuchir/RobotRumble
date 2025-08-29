@@ -18,7 +18,7 @@ public class ExtendoSubsystem extends SubsystemBase {
     public static double f = 0;
     private static final PIDFController extendoPIDF = new PIDFController(p, i, d, f);
     public static double setPoint = 0;
-    public static double maxPowerConstant = 1;
+    private double lastPower = 0.0;
     public DcMotorEx extendoMotor;
     public ElapsedTime timer = new ElapsedTime();
     Globals.ExtendoState extendoState;
@@ -26,33 +26,12 @@ public class ExtendoSubsystem extends SubsystemBase {
 
     public ExtendoSubsystem(DcMotorEx extendoMotorInput) {
         extendoMotor = extendoMotorInput;
-        extendoMotor.setCurrentAlert(Globals.extendoStaticMax, CurrentUnit.AMPS);
-    }
-
-    public void extendoSlidesLoop(double currentP) {
-        timer.reset();
-
-        motorPos = extendoMotor.getCurrentPosition();
-
-        extendoPIDF.setP(currentP * p);
-        extendoPIDF.setI(i);
-        extendoPIDF.setD(d);
-        extendoPIDF.setF(f);
-
-        extendoPIDF.setSetPoint(setPoint);
-
-        double maxPower = (f * motorPos) + maxPowerConstant;
-        double power = Range.clip(extendoPIDF.calculate(motorPos, setPoint), -maxPower, maxPower);
-
-        extendoMotor.setPower(power);
     }
 
     public void extendoSlidesLoop() {
         timer.reset();
 
         motorPos = extendoMotor.getCurrentPosition();
-
-        if (Math.abs(motorPos-setPoint) < 5) { extendoMotor.setPower(0); } else {
 
             extendoPIDF.setP(p);
             extendoPIDF.setI(i);
@@ -61,31 +40,13 @@ public class ExtendoSubsystem extends SubsystemBase {
 
             extendoPIDF.setSetPoint(setPoint);
 
-            double maxPower = (f * motorPos) + maxPowerConstant;
-            double power = Range.clip(extendoPIDF.calculate(motorPos, setPoint), -maxPower, maxPower);
+            double power = Range.clip(extendoPIDF.calculate(motorPos, setPoint), -1, 1);
 
 
-            extendoMotor.setPower(power);
-        }
-
-    }
-
-    public void extendoSlidesLoop(double p, double i, double d, double f) {
-        timer.reset();
-
-        motorPos = extendoMotor.getCurrentPosition();
-
-        extendoPIDF.setP(p);
-        extendoPIDF.setI(i);
-        extendoPIDF.setD(d);
-        extendoPIDF.setF(f);
-
-        extendoPIDF.setSetPoint(setPoint);
-
-        double maxPower = (f * motorPos) + maxPowerConstant;
-        double power = Range.clip(extendoPIDF.calculate(motorPos, setPoint), -maxPower, maxPower);
-
-        extendoMotor.setPower(power);
+            if (Math.abs(power - lastPower) > 0.03) {
+                extendoMotor.setPower(power);
+                lastPower = power;
+            }
     }
 
     public void extendoSetPosition(double customSlidesPosition) {

@@ -5,15 +5,14 @@ import com.acmerobotics.roadrunner.Pose2d;
 
 @Config
 public class Globals {
-    public static double extendoStaticMax = 15;
     public static Globals.ExtendoState extendoState = ExtendoState.REST;
     public static Globals.DropdownState dropdownState = DropdownState.TRANSFER;
     public static Globals.GateState gateState = GateState.CLOSED;
     public static Globals.SpinnerState spinnerState = SpinnerState.STOPPED;
     public static Globals.OuttakeSlidesState outtakeSlidesState = OuttakeSlidesState.REST;
     public static Globals.OuttakeClawState outtakeClawState = OuttakeClawState.CLOSED;
-    public static Globals.OuttakeWristState outtakeWristState = OuttakeWristState.TRANSFER;
-    public static Globals.OuttakeArmState outtakeArmState = OuttakeArmState.SPECIMEN_GRAB;
+    public static Globals.OuttakeWristState outtakeWristState = OuttakeWristState.SPEC_REST;
+    public static Globals.OuttakeArmState outtakeArmState = OuttakeArmState.SPEC_REST;
 
     public static Pose2d DEFAULT_START_POSE = new Pose2d(0, 0, Math.toRadians(0));
     public static Pose2d BLUE_SIDEWAYS_START_POSE = new Pose2d(41, 64, Math.toRadians(180));
@@ -22,10 +21,11 @@ public class Globals {
     // Lift Subsystem Constants
     public static double LIFT_HIGH_POS = 930;
     public static double LIFT_MID_POS = 260;
-    public static double LIFT_PARK_POS = 0;
+
     public static double LIFT_TRANSFER_POS = 80;
-    public static double LIFT_TRANSFER_READY_POS = 95;
-    public static double LIFT_READY_DEPOSIT_POS = 100; //after transfer, before bucket placement (maybe this is the same as mid?)
+    public static double LIFT_TRANSFER_READY_POS = 110;
+    public static double LIFT_READY_DEPOSIT_POS = LIFT_TRANSFER_READY_POS;
+
     public static double LIFT_SPECIMEN_GRAB_POS = 0;
     public static double LIFT_SPECIMEN_DEPOSIT_POS = 505;
     public static double LIFT_RETRACT_POS = 0;
@@ -37,12 +37,20 @@ public class Globals {
     public static double EXTENDO_MAX_TOLERANCE = 15;
 
     public static double spinnerSpeed = 1;
+    public static double maxSpinnerCurrent = 4900;
+
+    public static int SERVO_WAIT_TIME = 25; //ms
 
 
     //Dropdown Subsystem Constants
-    public static double DROPDOWN_TRANSFER = 0.65; //vertical
-    public static double DROPDOWN_GROUND = 0.45; //good intake. 0.53 when fully extended
-    public static double DROPDOWN_EXTEND = 0.65; //good over the sub
+    public static double DROPDOWN_TRANSFER = 0.65;
+    public static double DROPDOWN_COCKED_UP = 0.69; //best transfer
+    public static double DROPDOWN_EXTEND = 0.65;
+
+    public static final double[] EXTENDO_POS = {181, 349, 517};
+    public static final double[] DROPDOWN_VAL = {0.54, 0.555, 0.56};
+
+    public static double EXTENDO_TRANSFER_FACTOR = 0.2;
 
     //Gate Subsystem Constants
     public static double GATE_CLOSED = 0.09;
@@ -60,12 +68,17 @@ public class Globals {
     public static double OUTTAKE_WRIST_SPECIMEN_DEPOSIT = 0.2;
     public static double OUTTAKE_WRIST_TRANSFER = 0;
     public static double OUTTAKE_WRIST_BUCKET = 0.82;
+    public static double OUTTAKE_WRIST_SAMP_REST = 0.9;
+    public static double OUTTAKE_WRIST_SPEC_REST= 0.4;
+    public static double OUTTAKE_WRIST_UP = 0.5;
 
     //Outtake Arm Constants:
-    public static double OUTTAKE_ARM_TRANSFER = .98;
+    public static double OUTTAKE_ARM_TRANSFER = 1.00;
     public static double OUTTAKE_ARM_SPECIMEN_GRAB = 0;
     public static double OUTTAKE_ARM_SPECIMEN_DEPOSIT = 0.64;
     public static double OUTTAKE_ARM_BUCKET = 0.3;
+    public static double OUTTAKE_ARM_SAMP_REST = 0;
+    public static double OUTTAKE_ARM_SPEC_REST= 0.6;
 
     public static double MIN_DISTANCE_THRESHOLD = 1.35;
     public static double MAX_DISTANCE_THRESHOLD = 2.5;
@@ -80,19 +93,7 @@ public class Globals {
         BLUE
     }
 
-
-    public enum RobotState {
-        INITIALIZED,
-        TRANSFERRED,
-        SCORING,
-        INTAKING,
-        EJECTING,
-        SPECIMEN_INTAKING,
-        SPECIMEN_SCORING
-    }
-    public static RobotState robotState;
-
-    public static OpModeType opModeType;
+    public static OpModeType opModeType = OpModeType.AUTO;
     public static AllianceColor allianceColor = AllianceColor.BLUE;
 
     //Intake States:
@@ -107,7 +108,8 @@ public class Globals {
     public enum DropdownState {
         TRANSFER,
         INTAKE,
-        READY
+        READY,
+        COCKED_UP
     }
 
     public enum GateState {
@@ -140,14 +142,19 @@ public class Globals {
         TRANSFER,
         SPECIMEN_GRAB,
         SPECIMEN_DEPOSIT,
-        BUCKET_IDEAL
+        BUCKET_IDEAL,
+        SAMP_REST,
+        SPEC_REST,
+        UP
     }
 
     public enum OuttakeArmState {
         TRANSFER,
         SPECIMEN_GRAB,
         SPECIMEN_DEPOSIT,
-        BUCKET_IDEAL
+        BUCKET_IDEAL,
+        SAMP_REST,
+        SPEC_REST
     }
 
 }

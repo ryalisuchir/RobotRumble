@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.common.robot;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -44,7 +45,8 @@ public class Robot {
     public ServoImplEx intakeCoaxialLeft, intakeCoaxialRight; //Dropdown
     public ServoImplEx gate; //Micro for intake gate
     public ServoImplEx outtakeClaw, outtakeWrist, outtakeArm; //All outtake
-    public ServoImplEx leftHang, rightHang, leftPto, rightPto; //All hang
+    public ServoImplEx leftPto, rightPto; //PTO Hang
+    public CRServo leftHang, rightHang; //Level 2 Hang
 
     public List<LynxModule> allHubs;
     public LynxModule ControlHub;
@@ -118,6 +120,10 @@ public class Robot {
         outtakeClaw = hardwareMap.get(ServoImplEx.class, "outtakeClaw");
         outtakeWrist = hardwareMap.get(ServoImplEx.class, "outtakeWrist");
         outtakeArm = hardwareMap.get(ServoImplEx.class, "outtakeArm");
+        leftHang = hardwareMap.get(CRServo.class, "leftHang");
+        rightHang = hardwareMap.get(CRServo.class, "rightHang");
+        leftPto = hardwareMap.get(ServoImplEx.class, "leftPto");
+        rightPto = hardwareMap.get(ServoImplEx.class, "rightPto");
 
         intakeCoaxialRight.setDirection(Servo.Direction.REVERSE);
 
@@ -144,7 +150,7 @@ public class Robot {
                 wristSubsystem
         );
 
-        
+
     }
 
     public void clearCache() {

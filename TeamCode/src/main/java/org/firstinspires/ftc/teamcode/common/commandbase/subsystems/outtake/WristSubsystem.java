@@ -31,6 +31,15 @@ public class WristSubsystem extends SubsystemBase {
             case BUCKET_IDEAL:
                 wrist.setPosition(Globals.OUTTAKE_WRIST_BUCKET);
                 break;
+            case SAMP_REST:
+                wrist.setPosition(Globals.OUTTAKE_WRIST_SAMP_REST);
+                break;
+            case SPEC_REST:
+                wrist.setPosition(Globals.OUTTAKE_WRIST_SPEC_REST);
+                break;
+            case UP:
+                wrist.setPosition(Globals.OUTTAKE_WRIST_UP);
+                break;
         }
     }
 }
